@@ -1,0 +1,9 @@
+/* CSS for AnnotatableBlock */
+
+.annotatable .count {
+    font-weight: bold;
+}
+
+.annotatable p {
+    cursor: pointer;
+}

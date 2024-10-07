@@ -1,0 +1,9 @@
+/* CSS for ProblemBlock */
+
+.problem .count {
+    font-weight: bold;
+}
+
+.problem p {
+    cursor: pointer;
+}

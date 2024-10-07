@@ -1,0 +1,9 @@
+/* CSS for PollBlock */
+
+.poll .count {
+    font-weight: bold;
+}
+
+.poll p {
+    cursor: pointer;
+}

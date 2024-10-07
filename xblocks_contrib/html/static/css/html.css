@@ -1,0 +1,9 @@
+/* CSS for HtmlBlock */
+
+.html .count {
+    font-weight: bold;
+}
+
+.html p {
+    cursor: pointer;
+}

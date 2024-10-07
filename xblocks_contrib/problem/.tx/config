@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[o:open-edx:p:p:xblocks:r:problem]
+file_filter = problem/translations/<lang>/LC_MESSAGES/text.po
+source_file = problem/translations/en/LC_MESSAGES/text.po
+source_lang = en
+type        = PO

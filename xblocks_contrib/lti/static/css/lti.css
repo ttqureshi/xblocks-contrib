@@ -1,0 +1,9 @@
+/* CSS for LTIBlock */
+
+.lti .count {
+    font-weight: bold;
+}
+
+.lti p {
+    cursor: pointer;
+}

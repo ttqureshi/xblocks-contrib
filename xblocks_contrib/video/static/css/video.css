@@ -1,0 +1,9 @@
+/* CSS for VideoBlock */
+
+.video .count {
+    font-weight: bold;
+}
+
+.video p {
+    cursor: pointer;
+}

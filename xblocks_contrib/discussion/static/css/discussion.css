@@ -1,0 +1,9 @@
+/* CSS for DiscussionXBlock */
+
+.discussion .count {
+    font-weight: bold;
+}
+
+.discussion p {
+    cursor: pointer;
+}
