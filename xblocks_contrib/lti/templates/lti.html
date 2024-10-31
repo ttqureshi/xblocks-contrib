@@ -1,70 +1,106 @@
 {% load i18n %}
 
-<h3 class="hd hd-3 problem-header">
-    {# Translators:  "External resource" means that this learning module is hosted on a platform external to the edX LMS #}
-    {{display_name}} ({% trans 'External resource' %})
-</h3>
+<div class="lti-wrapper">
+    <div
+        id="lti_id"
+        class="lti"
+        data-open_in_a_new_page="true"
+        data-ajax_url="www.example.com/ajax_url"
+    >
 
-{% if has_score and weight %}
-    <div class="problem-progress">
-        {% if module_score is not None %}
-            {# Translators: "points" is the student's achieved score on this LTI unit, and "total_points" is the maximum number of points achievable. #}
-            {% trans "points" as points_trans %}
-            {% trans "{points} / {total_points} points" as score_trans %}
-            ({{ module_score }} / {{ weight }} {{ points_trans }})
-        {% else %}
-            {# Translators: "total_points" is the maximum number of points achievable on this LTI unit #}
-            {% trans "total_points" as total_points_trans %}
-            ({{ weight }} {{ total_points_trans }} possible)
-        {% endif %}
+        <form
+            action=""
+            name="ltiLaunchForm"
+            class="ltiLaunchForm"
+            method="post"
+            target="_blank"
+            enctype="application/x-www-form-urlencoded"
+        >
+            <input name="launch_presentation_return_url" value="" />
+            <input name="lti_version" value="LTI-1p0" />
+            <input name="user_id" value="student" />
+            <input name="oauth_nonce" value="28347958723982798572" />
+            <input name="oauth_timestamp" value="2389479832" />
+            <input name="oauth_consumer_key" value="" />
+            <input name="lis_result_sourcedid" value="" />
+            <input name="oauth_signature_method" value="HMAC-SHA1" />
+            <input name="oauth_version" value="1.0" />
+            <input name="role" value="student" />
+            <input name="lis_outcome_service_url" value="" />
+            <input name="oauth_signature" value="89ru3289r3ry283y3r82ryr38yr" />
+            <input name="lti_message_type" value="basic-lti-launch-request" />
+            <input name="oauth_callback" value="about:blank" />
+            <input name="context_id" value="testorg/testcoursename/2014" />
+
+            <input type="submit" value="Press to Launch" />
+        </form>
     </div>
-{% endif %}
-
-<div
-    id="{{ element_id }}"
-    class="{{ element_class }}"
-    data-ask-to-send-username="{{ ask_to_send_username }}"
-    data-ask-to-send-email="{{ ask_to_send_email }}"
->
-
-{% if launch_url and launch_url !=  'http://www.example.com' and not hide_launch %}
-    {% if open_in_a_new_page %}
-        <div class="wrapper-lti-link">
-            {% if description %}
-                <div class="lti-description">{{ description }}</div>
+    <h3 class="hd hd-3 problem-header">
+        {# Translators:  "External resource" means that this learning module is hosted on a platform external to the edX LMS #}
+        {{display_name}} ({% trans 'External resource' %})
+    </h3>
+    
+    {% if has_score and weight %}
+        <div class="problem-progress">
+            {% if module_score is not None %}
+                {# Translators: "points" is the student's achieved score on this LTI unit, and "total_points" is the maximum number of points achievable. #}
+                {% trans "points" as points_trans %}
+                {% trans "{points} / {total_points} points" as score_trans %}
+                ({{ module_score }} / {{ weight }} {{ points_trans }})
+            {% else %}
+                {# Translators: "total_points" is the maximum number of points achievable on this LTI unit #}
+                {% trans "total_points" as total_points_trans %}
+                ({{ weight }} {{ total_points_trans }} possible)
             {% endif %}
-            <p class="lti-link external">
-                <a target="_blank" class="link_lti_new_window" rel="noopener" href="{{ form_url }}">
-                    {{ button_text|default:_('View resource in a new window') }}
-                    <span class="icon fa fa-external-link" aria-hidden="true"></span>
-                </a>
-            </p>
         </div>
-    {% else %}
-        {# The result of the form submit will be rendered here. #}
-        <iframe
-            title="Form Result"
-            class="ltiLaunchFrame"
-            name="ltiFrame-{{ element_id }}"
-            src="{{ form_url }}"
-            allowfullscreen="true"
-            webkitallowfullscreen="true"
-            mozallowfullscreen="true"
-            allow="microphone *; camera *; midi *; geolocation *; encrypted-media *"
-        ></iframe>
     {% endif %}
-{% elif not hide_launch %}
-    <h4 class="hd hd-4 error_message">
-        {{ _('Please provide launch_url. Click "Edit", and fill in the required fields.') }}
-    </h4>
-{% endif %}
-
-{% if has_score and comment %}
-    <h4 class="hd hd-4 problem-feedback-label">${_("Feedback on your work from the grader:")}</h4>
-    <div class="problem-feedback">
-        {# sanitized with nh3 in view #}
-        {{ comment|safe }}
+    
+    <div
+        id="{{ element_id }}"
+        class="{{ element_class }}"
+        data-ask-to-send-username="{{ ask_to_send_username }}"
+        data-ask-to-send-email="{{ ask_to_send_email }}"
+    >
+    
+    {% if launch_url and launch_url !=  'http://www.example.com' and not hide_launch %}
+        {% if open_in_a_new_page %}
+            <div class="wrapper-lti-link">
+                {% if description %}
+                    <div class="lti-description">{{ description }}</div>
+                {% endif %}
+                <p class="lti-link external">
+                    <a target="_blank" class="link_lti_new_window" rel="noopener" href="{{ form_url }}">
+                        {{ button_text|default:_('View resource in a new window') }}
+                        <span class="icon fa fa-external-link" aria-hidden="true"></span>
+                    </a>
+                </p>
+            </div>
+        {% else %}
+            {# The result of the form submit will be rendered here. #}
+            <iframe
+                title="Form Result"
+                class="ltiLaunchFrame"
+                name="ltiFrame-{{ element_id }}"
+                src="{{ form_url }}"
+                allowfullscreen="true"
+                webkitallowfullscreen="true"
+                mozallowfullscreen="true"
+                allow="microphone *; camera *; midi *; geolocation *; encrypted-media *"
+            ></iframe>
+        {% endif %}
+    {% elif not hide_launch %}
+        <h4 class="hd hd-4 error_message">
+            {{ _('Please provide launch_url. Click "Edit", and fill in the required fields.') }}
+        </h4>
+    {% endif %}
+    
+    {% if has_score and comment %}
+        <h4 class="hd hd-4 problem-feedback-label">${_("Feedback on your work from the grader:")}</h4>
+        <div class="problem-feedback">
+            {# sanitized with nh3 in view #}
+            {{ comment|safe }}
+        </div>
+    {% endif %}
+    
     </div>
-{% endif %}
-
 </div>

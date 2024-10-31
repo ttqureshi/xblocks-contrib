@@ -74,7 +74,12 @@ from webob import Response
 from web_fragments.fragment import Fragment
 from xblock.core import List, Scope, String, XBlock
 from xblock.fields import Boolean, Float
-from xblock.utils.resources import ResourceLoader
+try:
+    from xblock.utils.resources import ResourceLoader
+    from xblock.utils.studio_editable import StudioEditableXBlockMixin
+except ModuleNotFoundError:
+    from xblockutils.resources import ResourceLoader
+    from xblockutils.studio_editable import StudioEditableXBlockMixin
 
 from openedx.core.djangolib.markup import HTML, Text
 from .lti_2_util import LTI20BlockMixin, LTIError
@@ -101,176 +106,13 @@ def noop(text):
 
 _ = noop
 
-class LTIFields:
-    """
-    Fields to define and obtain LTI tool from provider are set here,
-    except credentials, which should be set in course settings::
-
-    `lti_id` is id to connect tool with credentials in course settings. It should not contain :: (double semicolon)
-    `launch_url` is launch URL of tool.
-    `custom_parameters` are additional parameters to navigate to proper book and book page.
-
-    For example, for Vitalsource provider, `launch_url` should be
-    *https://bc-staging.vitalsource.com/books/book*,
-    and to get to proper book and book page, you should set custom parameters as::
-
-        vbid=put_book_id_here
-        book_location=page/put_page_number_here
-
-    Default non-empty URL for `launch_url` is needed due to oauthlib demand (URL scheme should be presented)::
-
-    https://github.com/idan/oauthlib/blob/master/oauthlib/oauth1/rfc5849/signature.py#L136
-    """
-    display_name = String(
-        display_name=_("Display Name"),
-        help=_(
-            "The display name for this component. "
-            "Analytics reports may also use the display name to identify this component."
-        ),
-        scope=Scope.settings,
-        default="LTI",
-    )
-    lti_id = String(
-        display_name=_("LTI ID"),
-        help=Text(_(
-            "Enter the LTI ID for the external LTI provider.  "
-            "This value must be the same LTI ID that you entered in the "
-            "LTI Passports setting on the Advanced Settings page."
-            "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
-        )).format(
-            break_tag=HTML(BREAK_TAG),
-            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
-            anchor_close=HTML("</a>")
-        ),
-        default='',
-        scope=Scope.settings
-    )
-    launch_url = String(
-        display_name=_("LTI URL"),
-        help=Text(_(
-            "Enter the URL of the external tool that this component launches. "
-            "This setting is only used when Hide External Tool is set to False."
-            "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
-        )).format(
-            break_tag=HTML(BREAK_TAG),
-            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
-            anchor_close=HTML("</a>")
-        ),
-        default='http://www.example.com',
-        scope=Scope.settings)
-    custom_parameters = List(
-        display_name=_("Custom Parameters"),
-        help=Text(_(
-            "Add the key/value pair for any custom parameters, such as the page your e-book should open to or "
-            "the background color for this component."
-            "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
-        )).format(
-            break_tag=HTML(BREAK_TAG),
-            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
-            anchor_close=HTML("</a>")
-        ),
-        scope=Scope.settings)
-    open_in_a_new_page = Boolean(
-        display_name=_("Open in New Page"),
-        help=_(
-            "Select True if you want students to click a link that opens the LTI tool in a new window. "
-            "Select False if you want the LTI content to open in an IFrame in the current page. "
-            "This setting is only used when Hide External Tool is set to False.  "
-        ),
-        default=True,
-        scope=Scope.settings
-    )
-    has_score = Boolean(
-        display_name=_("Scored"),
-        help=_(
-            "Select True if this component will receive a numerical score from the external LTI system."
-        ),
-        default=False,
-        scope=Scope.settings
-    )
-    weight = Float(
-        display_name=_("Weight"),
-        help=_(
-            "Enter the number of points possible for this component.  "
-            "The default value is 1.0.  "
-            "This setting is only used when Scored is set to True."
-        ),
-        default=1.0,
-        scope=Scope.settings,
-        values={"min": 0},
-    )
-    module_score = Float(
-        help=_("The score kept in the xblock KVS -- duplicate of the published score in django DB"),
-        default=None,
-        scope=Scope.user_state
-    )
-    score_comment = String(
-        help=_("Comment as returned from grader, LTI2.0 spec"),
-        default="",
-        scope=Scope.user_state
-    )
-    hide_launch = Boolean(
-        display_name=_("Hide External Tool"),
-        help=_(
-            "Select True if you want to use this component as a placeholder for syncing with an external grading  "
-            "system rather than launch an external tool.  "
-            "This setting hides the Launch button and any IFrames for this component."
-        ),
-        default=False,
-        scope=Scope.settings
-    )
-
-    # Users will be presented with a message indicating that their e-mail/username would be sent to a third
-    # party application. When "Open in New Page" is not selected, the tool automatically appears without any user action.  # lint-amnesty, pylint: disable=line-too-long
-    ask_to_send_username = Boolean(
-        display_name=_("Request user's username"),
-        # Translators: This is used to request the user's username for a third party service.
-        help=_("Select True to request the user's username."),
-        default=False,
-        scope=Scope.settings
-    )
-    ask_to_send_email = Boolean(
-        display_name=_("Request user's email"),
-        # Translators: This is used to request the user's email for a third party service.
-        help=_("Select True to request the user's email address."),
-        default=False,
-        scope=Scope.settings
-    )
-
-    description = String(
-        display_name=_("LTI Application Information"),
-        help=_(
-            "Enter a description of the third party application. If requesting username and/or email, use this text box to inform users "  # lint-amnesty, pylint: disable=line-too-long
-            "why their username and/or email will be forwarded to a third party application."
-        ),
-        default="",
-        scope=Scope.settings
-    )
-
-    button_text = String(
-        display_name=_("Button Text"),
-        help=_(
-            "Enter the text on the button used to launch the third party application."
-        ),
-        default="",
-        scope=Scope.settings
-    )
-
-    accept_grades_past_due = Boolean(
-        display_name=_("Accept grades past deadline"),
-        help=_("Select True to allow third party systems to post grades past the deadline."),
-        default=True,
-        scope=Scope.settings
-    )
-
-
 @XBlock.needs("i18n")
 @XBlock.needs("user")
 @XBlock.needs("rebind_user")
 class LTIBlock(
-    XBlock,
-    LTIFields,
     LTI20BlockMixin,
+    StudioEditableXBlockMixin,
+    XBlock,
 ): # pylint: disable=abstract-method
     """
     THIS MODULE IS DEPRECATED IN FAVOR OF https://github.com/openedx/xblock-lti-consumer
@@ -356,6 +198,181 @@ class LTIBlock(
 
     # Indicates that this XBlock has been extracted from edx-platform.
     is_extracted = True
+
+    ######################################
+    #             LTI FIELDS             #
+    ######################################
+    # `lti_id` is id to connect tool with credentials in course settings. It should not contain :: (double semicolon)
+    # `launch_url` is launch URL of tool.
+    # `custom_parameters` are additional parameters to navigate to proper book and book page.
+
+    # For example, for Vitalsource provider, `launch_url` should be
+    # *https://bc-staging.vitalsource.com/books/book*,
+    # and to get to proper book and book page, you should set custom parameters as::
+
+    #     vbid=put_book_id_here
+    #     book_location=page/put_page_number_here
+
+    # Default non-empty URL for `launch_url` is needed due to oauthlib demand (URL scheme should be presented)::
+
+    # https://github.com/idan/oauthlib/blob/master/oauthlib/oauth1/rfc5849/signature.py#L136
+    display_name = String(
+        display_name=_("Display Name"),
+        help=_(
+            "The display name for this component. "
+            "Analytics reports may also use the display name to identify this component."
+        ),
+        scope=Scope.settings,
+        default="LTI",
+    )
+
+    lti_id = String(
+        display_name=_("LTI ID"),
+        help=Text(_(
+            "Enter the LTI ID for the external LTI provider.  "
+            "This value must be the same LTI ID that you entered in the "
+            "LTI Passports setting on the Advanced Settings page."
+            "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
+        )).format(
+            break_tag=HTML(BREAK_TAG),
+            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
+            anchor_close=HTML("</a>")
+        ),
+        default='',
+        scope=Scope.settings
+    )
+
+    launch_url = String(
+        display_name=_("LTI URL"),
+        help=Text(_(
+            "Enter the URL of the external tool that this component launches. "
+            "This setting is only used when Hide External Tool is set to False."
+            "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
+        )).format(
+            break_tag=HTML(BREAK_TAG),
+            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
+            anchor_close=HTML("</a>")
+        ),
+        default='http://www.example.com',
+        scope=Scope.settings)
+    
+    custom_parameters = List(
+        display_name=_("Custom Parameters"),
+        help=Text(_(
+            "Add the key/value pair for any custom parameters, such as the page your e-book should open to or "
+            "the background color for this component."
+            "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
+        )).format(
+            break_tag=HTML(BREAK_TAG),
+            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
+            anchor_close=HTML("</a>")
+        ),
+        scope=Scope.settings)
+    
+    open_in_a_new_page = Boolean(
+        display_name=_("Open in New Page"),
+        help=_(
+            "Select True if you want students to click a link that opens the LTI tool in a new window. "
+            "Select False if you want the LTI content to open in an IFrame in the current page. "
+            "This setting is only used when Hide External Tool is set to False.  "
+        ),
+        default=True,
+        scope=Scope.settings
+    )
+
+    has_score = Boolean(
+        display_name=_("Scored"),
+        help=_(
+            "Select True if this component will receive a numerical score from the external LTI system."
+        ),
+        default=False,
+        scope=Scope.settings
+    )
+
+    weight = Float(
+        display_name=_("Weight"),
+        help=_(
+            "Enter the number of points possible for this component.  "
+            "The default value is 1.0.  "
+            "This setting is only used when Scored is set to True."
+        ),
+        default=1.0,
+        scope=Scope.settings,
+        values={"min": 0},
+    )
+
+    module_score = Float(
+        help=_("The score kept in the xblock KVS -- duplicate of the published score in django DB"),
+        default=None,
+        scope=Scope.user_state
+    )
+
+    score_comment = String(
+        help=_("Comment as returned from grader, LTI2.0 spec"),
+        default="",
+        scope=Scope.user_state
+    )
+
+    hide_launch = Boolean(
+        display_name=_("Hide External Tool"),
+        help=_(
+            "Select True if you want to use this component as a placeholder for syncing with an external grading  "
+            "system rather than launch an external tool.  "
+            "This setting hides the Launch button and any IFrames for this component."
+        ),
+        default=False,
+        scope=Scope.settings
+    )
+
+    # Users will be presented with a message indicating that their e-mail/username would be sent to a third
+    # party application. When "Open in New Page" is not selected, the tool automatically appears without any user action.  # lint-amnesty, pylint: disable=line-too-long
+    ask_to_send_username = Boolean(
+        display_name=_("Request user's username"),
+        # Translators: This is used to request the user's username for a third party service.
+        help=_("Select True to request the user's username."),
+        default=False,
+        scope=Scope.settings
+    )
+    
+    ask_to_send_email = Boolean(
+        display_name=_("Request user's email"),
+        # Translators: This is used to request the user's email for a third party service.
+        help=_("Select True to request the user's email address."),
+        default=False,
+        scope=Scope.settings
+    )
+
+    description = String(
+        display_name=_("LTI Application Information"),
+        help=_(
+            "Enter a description of the third party application. If requesting username and/or email, use this text box to inform users "  # lint-amnesty, pylint: disable=line-too-long
+            "why their username and/or email will be forwarded to a third party application."
+        ),
+        default="",
+        scope=Scope.settings
+    )
+
+    button_text = String(
+        display_name=_("Button Text"),
+        help=_(
+            "Enter the text on the button used to launch the third party application."
+        ),
+        default="",
+        scope=Scope.settings
+    )
+
+    accept_grades_past_due = Boolean(
+        display_name=_("Accept grades past deadline"),
+        help=_("Select True to allow third party systems to post grades past the deadline."),
+        default=True,
+        scope=Scope.settings
+    )
+    
+    editable_fields = (
+        "accept_grades_past_due", "button_text", "custom_parameters", "display_name",
+        "hide_launch", "description", "lti_id", "launch_url", "open_in_a_new_page",
+        "ask_to_send_email", "ask_to_send_username", "has_score", "weight",
+    )
 
     def max_score(self):
         return self.weight if self.has_score else None
@@ -509,7 +526,7 @@ class LTIBlock(
         """
         This is called to get context with new oauth params to iframe.
         """
-        template = resource_loader.load_unicode("templates/lti_form.html").format(**self.get_context())
+        template = resource_loader.render_django_template("templates/lti_form.html", self.get_context())
         return Response(template, content_type='text/html')
 
     @XBlock.handler
