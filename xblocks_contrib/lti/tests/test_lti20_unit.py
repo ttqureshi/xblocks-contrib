@@ -11,7 +11,7 @@ from xblock.field_data import DictFieldData
 
 from lti_2_util import LTIError
 from lti import LTIBlock
-from xmodule.tests.helpers import StubUserService
+from .helpers import StubUserService
 
 from . import get_test_system
 
