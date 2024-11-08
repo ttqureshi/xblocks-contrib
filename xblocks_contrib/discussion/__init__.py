@@ -1,5 +1,5 @@
 """
-Init for the DiscussionXBlock.
+DiscussionXBlock.
 """
 
 from .discussion import DiscussionXBlock
