@@ -24,11 +24,11 @@ binaryornot==0.4.4
     # via
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.35.54
+boto3==1.35.57
     # via
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.35.54
+botocore==1.35.57
     # via
     #   -r requirements/test.txt
     #   boto3
@@ -171,7 +171,7 @@ mdurl==0.1.2
     #   markdown-it-py
 openedx-django-pyfs==3.7.0
     # via -r requirements/test.txt
-packaging==24.1
+packaging==24.2
     # via
     #   -r requirements/test.txt
     #   pyproject-api
