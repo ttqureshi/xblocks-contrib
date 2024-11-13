@@ -59,6 +59,7 @@ import base64
 import datetime
 import hashlib
 import logging
+import markupsafe
 import textwrap
 from xml.sax.saxutils import escape
 from unittest import mock
@@ -81,13 +82,12 @@ except ModuleNotFoundError:
     from xblockutils.resources import ResourceLoader
     from xblockutils.studio_editable import StudioEditableXBlockMixin
 
-from openedx.core.djangolib.markup import HTML, Text
 from .lti_2_util import LTI20BlockMixin, LTIError
 
-from common.djangoapps.xblock_django.constants import (
-    ATTR_KEY_ANONYMOUS_USER_ID,
-    ATTR_KEY_USER_ROLE,
-)
+# The anonymous user ID for the user in the course.
+ATTR_KEY_ANONYMOUS_USER_ID = 'edx-platform.anonymous_user_id'
+# The user's role in the course ('staff', 'instructor', or 'student').
+ATTR_KEY_USER_ROLE = 'edx-platform.user_role'
 
 resource_loader = ResourceLoader(__name__)
 
@@ -228,15 +228,15 @@ class LTIBlock(
 
     lti_id = String(
         display_name=_("LTI ID"),
-        help=Text(_(
+        help=markupsafe.escape(_(
             "Enter the LTI ID for the external LTI provider.  "
             "This value must be the same LTI ID that you entered in the "
             "LTI Passports setting on the Advanced Settings page."
             "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
         )).format(
-            break_tag=HTML(BREAK_TAG),
-            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
-            anchor_close=HTML("</a>")
+            break_tag=markupsafe.Markup(BREAK_TAG),
+            docs_anchor_open=markupsafe.Markup(DOCS_ANCHOR_TAG_OPEN),
+            anchor_close=markupsafe.Markup("</a>")
         ),
         default='',
         scope=Scope.settings
@@ -244,31 +244,31 @@ class LTIBlock(
 
     launch_url = String(
         display_name=_("LTI URL"),
-        help=Text(_(
+        help=markupsafe.escape(_(
             "Enter the URL of the external tool that this component launches. "
             "This setting is only used when Hide External Tool is set to False."
             "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
         )).format(
-            break_tag=HTML(BREAK_TAG),
-            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
-            anchor_close=HTML("</a>")
+            break_tag=markupsafe.Markup(BREAK_TAG),
+            docs_anchor_open=markupsafe.Markup(DOCS_ANCHOR_TAG_OPEN),
+            anchor_close=markupsafe.Markup("</a>")
         ),
         default='http://www.example.com',
         scope=Scope.settings)
-    
+
     custom_parameters = List(
         display_name=_("Custom Parameters"),
-        help=Text(_(
+        help=markupsafe.escape(_(
             "Add the key/value pair for any custom parameters, such as the page your e-book should open to or "
             "the background color for this component."
             "{break_tag}See {docs_anchor_open}the edX LTI documentation{anchor_close} for more details on this setting."
         )).format(
-            break_tag=HTML(BREAK_TAG),
-            docs_anchor_open=HTML(DOCS_ANCHOR_TAG_OPEN),
-            anchor_close=HTML("</a>")
+            break_tag=markupsafe.Markup(BREAK_TAG),
+            docs_anchor_open=markupsafe.Markup(DOCS_ANCHOR_TAG_OPEN),
+            anchor_close=markupsafe.Markup("</a>")
         ),
         scope=Scope.settings)
-    
+
     open_in_a_new_page = Boolean(
         display_name=_("Open in New Page"),
         help=_(
@@ -333,7 +333,7 @@ class LTIBlock(
         default=False,
         scope=Scope.settings
     )
-    
+
     ask_to_send_email = Boolean(
         display_name=_("Request user's email"),
         # Translators: This is used to request the user's email for a third party service.
@@ -367,7 +367,7 @@ class LTIBlock(
         default=True,
         scope=Scope.settings
     )
-    
+
     editable_fields = (
         "accept_grades_past_due", "button_text", "custom_parameters", "display_name",
         "hide_launch", "description", "lti_id", "launch_url", "open_in_a_new_page",
@@ -959,12 +959,12 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
 
         if (not signature.verify_hmac_sha1(mock_request_lti_1, client_secret) and not
                 signature.verify_hmac_sha1(mock_request_lti_2, client_secret)):
-            log.error("OAuth signature verification failed, for "
-                      "headers:{} url:{} method:{}".format(
-                          oauth_headers,
-                          self.get_outcome_service_url(),
-                          str(request.method)
-                      ))
+            log.error(
+                "OAuth signature verification failed, for "
+                "headers:{} url:{} method:{}".format(
+                    oauth_headers, self.get_outcome_service_url(), str(request.method)
+                )
+            )
             raise LTIError("OAuth signature verification has failed.")
 
     def get_client_key_secret(self):
@@ -996,4 +996,3 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
         else:
             close_date = due_date
         return close_date is not None and datetime.datetime.now(UTC) > close_date
-
