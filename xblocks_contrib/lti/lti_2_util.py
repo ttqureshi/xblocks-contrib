@@ -8,6 +8,7 @@ import base64
 import hashlib
 import json
 import logging
+import math
 import re
 from unittest import mock
 from urllib import parse
@@ -16,8 +17,6 @@ from django.conf import settings
 from oauthlib.oauth1 import Client
 from webob import Response
 from xblock.core import XBlock
-
-from openedx.core.lib.grade_utils import round_away_from_zero
 
 log = logging.getLogger(__name__)
 
@@ -154,6 +153,26 @@ class LTI20BlockMixin:
         log.info(f"[LTI]: {msg}")
         raise LTIError(msg)
 
+    def _round_away_from_zero(number, digits=0):
+        """
+        Round numbers using the 'away from zero' strategy as opposed to the
+        'Banker's rounding strategy.' The strategy refers to how we round when
+        a number is half way between two numbers.  eg. 0.5, 1.5, etc. In python 3
+        numbers round towards even. So 0.5 would round to 0 but 1.5 would round to 2.
+
+        See here for more on floating point rounding strategies:
+        https://en.wikipedia.org/wiki/IEEE_754#Rounding_rules
+
+        We want to continue to round away from zero so that student grades remain
+        consistent and don't suddenly change.
+        """
+        p = 10.0 ** digits
+
+        if number >= 0:
+            return float(math.floor((number * p) + 0.5)) / p
+        else:
+            return float(math.ceil((number * p) - 0.5)) / p
+
     def _lti_2_0_result_get_handler(self, request, real_user):
         """
         Helper request handler for GET requests to LTI 2.0 result endpoint
@@ -176,7 +195,7 @@ class LTI20BlockMixin:
             return Response(json.dumps(base_json_obj).encode('utf-8'), content_type=LTI_2_0_JSON_CONTENT_TYPE)
 
         # Fall through to returning grade and comment
-        base_json_obj['resultScore'] = round_away_from_zero(self.module_score, 2)
+        base_json_obj['resultScore'] = self._round_away_from_zero(self.module_score, 2)
         base_json_obj['comment'] = self.score_comment
         return Response(json.dumps(base_json_obj).encode('utf-8'), content_type=LTI_2_0_JSON_CONTENT_TYPE)
 
