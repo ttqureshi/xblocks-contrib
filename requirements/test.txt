@@ -63,6 +63,10 @@ django-appconf==1.1.0
     #   django-statici18n
 django-statici18n==2.6.0
     # via -r requirements/base.txt
+dnspython==2.7.0
+    # via
+    #   -r requirements/base.txt
+    #   pymongo
 edx-i18n-tools==1.6.3
     # via -r requirements/base.txt
 filelock==3.17.0
@@ -118,6 +122,10 @@ markupsafe==3.0.2
     #   xblock
 mdurl==0.1.2
     # via markdown-it-py
+nh3==0.2.18
+    # via -r requirements/base.txt
+oauthlib==3.2.2
+    # via -r requirements/base.txt
 openedx-django-pyfs==3.7.0
     # via -r requirements/base.txt
 packaging==24.2
@@ -145,6 +153,10 @@ polib==1.2.0
     #   edx-i18n-tools
 pygments==2.19.1
     # via rich
+pymongo==4.10.1
+    # via
+    #   -r requirements/base.txt
+    #   edx-opaque-keys
 pypng==0.20220715.0
     # via xblock-sdk
 pyproject-api==1.9.0
@@ -211,6 +223,10 @@ tox==4.24.1
     # via -r requirements/test.in
 types-python-dateutil==2.9.0.20241206
     # via arrow
+typing-extensions==4.12.2
+    # via
+    #   -r requirements/base.txt
+    #   edx-opaque-keys
 urllib3==2.2.3
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt

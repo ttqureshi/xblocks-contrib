@@ -25,7 +25,11 @@ django-appconf==1.1.0
     # via django-statici18n
 django-statici18n==2.6.0
     # via -r requirements/base.in
+dnspython==2.7.0
+    # via pymongo
 edx-i18n-tools==1.6.3
+    # via -r requirements/base.in
+edx-opaque-keys==2.11.0
     # via -r requirements/base.in
 fs==2.4.16
     # via
@@ -51,12 +55,20 @@ markupsafe==3.0.2
     # via
     #   mako
     #   xblock
+nh3==0.2.18
+    # via -r requirements/base.in
+oauthlib==3.2.2
+    # via -r requirements/base.in
 openedx-django-pyfs==3.7.0
     # via -r requirements/base.in
 path==16.16.0
     # via edx-i18n-tools
+pbr==6.1.0
+    # via stevedore
 polib==1.2.0
     # via edx-i18n-tools
+pymongo==4.10.1
+    # via edx-opaque-keys
 python-dateutil==2.9.0.post0
     # via
     #   botocore
@@ -78,6 +90,10 @@ six==1.17.0
     #   python-dateutil
 sqlparse==0.5.3
     # via django
+stevedore==5.3.0
+    # via edx-opaque-keys
+typing-extensions==4.12.2
+    # via edx-opaque-keys
 urllib3==2.2.3
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
