@@ -7,7 +7,6 @@ from copy import copy
 from unittest.mock import Mock, PropertyMock, patch
 from urllib import parse
 
-
 import pytest
 from django.conf import settings
 from django.test import TestCase, override_settings
@@ -20,11 +19,9 @@ from xblock.field_data import DictFieldData
 from xblock.fields import ScopeIds
 
 
-from common.djangoapps.xblock_django.constants import ATTR_KEY_ANONYMOUS_USER_ID
-from xmodule.fields import Timedelta
-from lti_2_util import LTIError
-from lti import LTIBlock
-from .helpers import StubUserService
+from xblocks_contrib.lti.lti_2_util import LTIError
+from xblocks_contrib.lti.lti import LTIBlock, ATTR_KEY_ANONYMOUS_USER_ID
+from .helpers import StubUserService, Timedelta
 
 from . import get_test_system
 
