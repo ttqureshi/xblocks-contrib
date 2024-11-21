@@ -153,7 +153,7 @@ class LTI20BlockMixin:
         log.info(f"[LTI]: {msg}")
         raise LTIError(msg)
 
-    def _round_away_from_zero(number, digits=0):
+    def _round_away_from_zero(self, number, digits=0):
         """
         Round numbers using the 'away from zero' strategy as opposed to the
         'Banker's rounding strategy.' The strategy refers to how we round when

@@ -20,10 +20,10 @@ from xblock.fields import ScopeIds
 
 
 from xblocks_contrib.lti.lti_2_util import LTIError
-from xblocks_contrib.lti.lti import LTIBlock, ATTR_KEY_ANONYMOUS_USER_ID
-from .helpers import StubUserService, Timedelta
+from xblocks_contrib.lti.lti import LTIBlock
+from .helpers import StubUserService, Timedelta, get_test_system
 
-from . import get_test_system
+ATTR_KEY_ANONYMOUS_USER_ID = 'edx-platform.anonymous_user_id'
 
 
 @override_settings(LMS_BASE="edx.org")
@@ -124,7 +124,7 @@ class LTIBlockTest(TestCase):
         }
 
     @patch(
-        'xmodule.lti_block.LTIBlock.get_client_key_secret',
+        'xblocks_contrib.lti.lti.LTIBlock.get_client_key_secret',
         return_value=('test_client_key', 'test_client_secret')
     )
     def test_authorization_header_not_present(self, _get_key_secret):
@@ -148,7 +148,7 @@ class LTIBlockTest(TestCase):
         self.assertDictEqual(expected_response, real_response)
 
     @patch(
-        'xmodule.lti_block.LTIBlock.get_client_key_secret',
+        'xblocks_contrib.lti.lti.LTIBlock.get_client_key_secret',
         return_value=('test_client_key', 'test_client_secret')
     )
     def test_authorization_header_empty(self, _get_key_secret):
@@ -310,7 +310,7 @@ class LTIBlockTest(TestCase):
         assert real_outcome_service_url == (mock_url_prefix + test_service_name)
 
     def test_resource_link_id(self):
-        with patch('xmodule.lti_block.LTIBlock.location', new_callable=PropertyMock):
+        with patch('xblocks_contrib.lti.lti.LTIBlock.location', new_callable=PropertyMock):
             self.xblock.location.html_id = lambda: 'i4x-2-3-lti-31de800015cf4afb973356dbe81496df'
             expected_resource_link_id = str(parse.quote(self.unquoted_resource_link_id))
             real_resource_link_id = self.xblock.get_resource_link_id()
@@ -375,9 +375,9 @@ class LTIBlockTest(TestCase):
         with pytest.raises(LTIError):
             self.xblock.get_client_key_secret()
 
-    @patch('xmodule.lti_block.signature.verify_hmac_sha1', Mock(return_value=True))
+    @patch('xblocks_contrib.lti.lti.signature.verify_hmac_sha1', Mock(return_value=True))
     @patch(
-        'xmodule.lti_block.LTIBlock.get_client_key_secret',
+        'xblocks_contrib.lti.lti.LTIBlock.get_client_key_secret',
         Mock(return_value=('test_client_key', 'test_client_secret'))
     )
     def test_successful_verify_oauth_body_sign(self):
@@ -386,8 +386,8 @@ class LTIBlockTest(TestCase):
         """
         self.xblock.verify_oauth_body_sign(self.get_signed_grade_mock_request())
 
-    @patch('xmodule.lti_block.LTIBlock.get_outcome_service_url', Mock(return_value='https://testurl/'))
-    @patch('xmodule.lti_block.LTIBlock.get_client_key_secret',
+    @patch('xblocks_contrib.lti.lti.LTIBlock.get_outcome_service_url', Mock(return_value='https://testurl/'))
+    @patch('xblocks_contrib.lti.lti.LTIBlock.get_client_key_secret',
            Mock(return_value=('__consumer_key__', '__lti_secret__')))
     def test_failed_verify_oauth_body_sign_proxy_mangle_url(self):
         """
@@ -457,9 +457,9 @@ class LTIBlockTest(TestCase):
         assert self.defaults['grade'] == grade
         assert self.defaults['action'] == action
 
-    @patch('xmodule.lti_block.signature.verify_hmac_sha1', Mock(return_value=False))
+    @patch('xblocks_contrib.lti.lti.signature.verify_hmac_sha1', Mock(return_value=False))
     @patch(
-        'xmodule.lti_block.LTIBlock.get_client_key_secret',
+        'xblocks_contrib.lti.lti.LTIBlock.get_client_key_secret',
         Mock(return_value=('test_client_key', 'test_client_secret'))
     )
     def test_failed_verify_oauth_body_sign(self):

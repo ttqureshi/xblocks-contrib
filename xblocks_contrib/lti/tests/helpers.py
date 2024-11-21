@@ -3,11 +3,13 @@ Utility methods for unit tests.
 """
 
 import datetime
-import pytest
 import re
-from path import Path as path
+from unittest.mock import Mock
+from opaque_keys.edx.keys import CourseKey
 from xblock.fields import JSONField
 from xblock.reference.user_service import UserService, XBlockUser
+from xblock.reference.plugins import NO_CACHE_VALUE
+from xblock.runtime import Runtime
 
 
 TIMEDELTA_REGEX = re.compile(r'^((?P<days>\d+?) day(?:s?))?(\s)?((?P<hours>\d+?) hour(?:s?))?(\s)?((?P<minutes>\d+?) minute(?:s)?)?(\s)?((?P<seconds>\d+?) second(?:s)?)?$')  # lint-amnesty, pylint: disable=line-too-long
@@ -110,3 +112,60 @@ class StubUserService(UserService):
         Return the original user passed into the service.
         """
         return self.user
+
+
+class MockRuntime(Runtime):
+    """A mock implementation of the Runtime class for testing purposes."""
+
+    def __init__(self, anonymous_student_id, services=None):
+        # id_reader and id_generator are required by Runtime.
+        super().__init__(id_reader=lambda: None, id_generator=lambda: None, services=services)
+        self.anonymous_student_id = anonymous_student_id
+
+    def handler_url(self, block, handler_name, suffix="", thirdparty=False):
+        return f"/mock_url/{handler_name}"
+
+    def local_resource_url(self, block, resource):
+        return f"/mock_resource_url/{resource}"
+
+    def resource_url(self, resource):
+        return f"/mock_resource/{resource}"
+
+    def publish(self, block, event_type, event_data):
+        pass
+
+
+def get_test_system(
+    course_id=CourseKey.from_string("/".join(["org", "course", "run"])),
+    user=None,
+    user_is_staff=False,
+    user_location=None,
+):
+    """Construct a minimal test system for the LTIBlockTest."""
+    # course_id = course_id or CourseKey.from_string("org/course/run")
+    # user = user or Mock(id="student", is_staff=user_is_staff)
+
+    if not user:
+        user = Mock(name='get_test_system.user', is_staff=False)
+    if not user_location:
+        user_location = Mock(name='get_test_system.user_location')
+    user_service = StubUserService(
+        user=user,
+        anonymous_user_id='student',
+        deprecated_anonymous_user_id='student',
+        user_is_staff=user_is_staff,
+        user_role='student',
+        request_country_code=user_location,
+    )
+    runtime = MockRuntime(
+        anonymous_student_id="student",
+        services={
+            "user": user_service,
+        }
+    )
+
+    # Add necessary mocks
+    runtime.publish = Mock(name="publish")
+    runtime._services["rebind_user"] = Mock(name="rebind_user")
+
+    return runtime
