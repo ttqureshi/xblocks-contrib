@@ -139,23 +139,17 @@ def get_test_system(
     course_id=CourseKey.from_string("/".join(["org", "course", "run"])),
     user=None,
     user_is_staff=False,
-    user_location=None,
 ):
     """Construct a minimal test system for the LTIBlockTest."""
-    # course_id = course_id or CourseKey.from_string("org/course/run")
-    # user = user or Mock(id="student", is_staff=user_is_staff)
 
     if not user:
         user = Mock(name='get_test_system.user', is_staff=False)
-    if not user_location:
-        user_location = Mock(name='get_test_system.user_location')
     user_service = StubUserService(
         user=user,
         anonymous_user_id='student',
         deprecated_anonymous_user_id='student',
         user_is_staff=user_is_staff,
         user_role='student',
-        request_country_code=user_location,
     )
     runtime = MockRuntime(
         anonymous_student_id="student",
@@ -163,9 +157,5 @@ def get_test_system(
             "user": user_service,
         }
     )
-
-    # Add necessary mocks
-    runtime.publish = Mock(name="publish")
-    runtime._services["rebind_user"] = Mock(name="rebind_user")
 
     return runtime

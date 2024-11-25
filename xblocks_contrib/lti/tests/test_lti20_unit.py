@@ -1,12 +1,12 @@
 """Tests for LTI Xmodule LTIv2.0 functional logic."""
 
-
 import datetime
 import textwrap
-import unittest
 from unittest.mock import Mock
 
 from pytz import UTC
+from django.conf import settings
+from django.test import TestCase, override_settings
 from xblock.field_data import DictFieldData
 
 from xblocks_contrib.lti.lti_2_util import LTIError
@@ -14,7 +14,8 @@ from xblocks_contrib.lti.lti import LTIBlock
 from .helpers import StubUserService, get_test_system
 
 
-class LTI20RESTResultServiceTest(unittest.TestCase):
+@override_settings(LMS_BASE="edx.org")
+class LTI20RESTResultServiceTest(TestCase):
     """Logic tests for LTI block. LTI2.0 REST ResultService"""
 
     USER_STANDIN = Mock()
@@ -23,20 +24,27 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.runtime = get_test_system(user=self.USER_STANDIN)
-        self.environ = {'wsgi.url_scheme': 'http', 'REQUEST_METHOD': 'POST'}
+        self.environ = {"wsgi.url_scheme": "http", "REQUEST_METHOD": "POST"}
         self.runtime.publish = Mock()
-        self.runtime._services['rebind_user'] = Mock()  # pylint: disable=protected-access
+        self.runtime._services["rebind_user"] = Mock()  # pylint: disable=protected-access
 
         self.xblock = LTIBlock(self.runtime, DictFieldData({}), Mock())
         self.lti_id = self.xblock.lti_id
+
+        self.unquoted_resource_link_id = (
+            "{}-i4x-2-3-lti-31de800015cf4afb973356dbe81496df".format(settings.LMS_BASE)
+        )
+
         self.xblock.due = None
         self.xblock.graceperiod = None
 
     def test_sanitize_get_context(self):
         """Tests that the get_context function does basic sanitization"""
         # get_context, unfortunately, requires a lot of mocking machinery
-        mocked_course = Mock(name='mocked_course', lti_passports=['lti_id:test_client:test_secret'])
-        modulestore = Mock(name='modulestore')
+        mocked_course = Mock(
+            name="mocked_course", lti_passports=["lti_id:test_client:test_secret"]
+        )
+        modulestore = Mock(name="modulestore")
         modulestore.get_course.return_value = mocked_course
         self.xblock.runtime.modulestore = modulestore
         self.xblock.lti_id = "lti_id"
@@ -48,14 +56,14 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         )
         for case in test_cases:
             self.xblock.score_comment = case[0]
-            assert case[1] == self.xblock.get_context()['comment']
+            assert case[1] == self.xblock.get_context()["comment"]
 
     def test_lti20_rest_bad_contenttype(self):
         """
         Input with bad content type
         """
         with self.assertRaisesRegex(LTIError, "Content-Type must be"):
-            request = Mock(headers={'Content-Type': 'Non-existent'})
+            request = Mock(headers={"Content-Type": "Non-existent"})
             self.xblock.verify_lti_2_0_result_rest_headers(request)
 
     def test_lti20_rest_failed_oauth_body_verify(self):
@@ -65,7 +73,9 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         err_msg = "OAuth body verification failed"
         self.xblock.verify_oauth_body_sign = Mock(side_effect=LTIError(err_msg))
         with self.assertRaisesRegex(LTIError, err_msg):
-            request = Mock(headers={'Content-Type': 'application/vnd.ims.lis.v2.result+json'})
+            request = Mock(
+                headers={"Content-Type": "application/vnd.ims.lis.v2.result+json"}
+            )
             self.xblock.verify_lti_2_0_result_rest_headers(request)
 
     def test_lti20_rest_good_headers(self):
@@ -74,7 +84,9 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         """
         self.xblock.verify_oauth_body_sign = Mock(return_value=True)
 
-        request = Mock(headers={'Content-Type': 'application/vnd.ims.lis.v2.result+json'})
+        request = Mock(
+            headers={"Content-Type": "application/vnd.ims.lis.v2.result+json"}
+        )
         self.xblock.verify_lti_2_0_result_rest_headers(request)
         #  We just want the above call to complete without exceptions, and to have called verify_oauth_body_sign
         assert self.xblock.verify_oauth_body_sign.called
@@ -88,7 +100,7 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         "user//"
         "user/gbere/"
         "user/gbere/xsdf"
-        "user/ಠ益ಠ"  # not alphanumeric
+        "user/ಠ益ಠ",  # not alphanumeric
     ]
 
     def test_lti20_rest_bad_dispatch(self):
@@ -202,7 +214,7 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
          "comment": "ಠ益ಠ"}
     """).encode('utf-8')
 
-    def get_signed_lti20_mock_request(self, body, method='PUT'):
+    def get_signed_lti20_mock_request(self, body, method="PUT"):
         """
         Example of signed from LTI 2.0 Provider.  Signatures and hashes are example only and won't verify
         """
@@ -216,9 +228,9 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
                 'oauth_consumer_key="test_client_key", '
                 'oauth_signature="my_signature%3D", '
                 'oauth_body_hash="gz+PeJZuF2//n9hNUnDj2v5kN70="'
-            )
+            ),
         }
-        mock_request.url = 'http://testurl'
+        mock_request.url = "http://testurl"
         mock_request.http_method = method
         mock_request.method = method
         mock_request.body = body
@@ -229,7 +241,9 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         Helper fn to set up mocking for lti 2.0 request test
         """
         self.xblock.max_score = Mock(return_value=1.0)
-        self.xblock.get_client_key_secret = Mock(return_value=('test_client_key', 'test_client_secret'))
+        self.xblock.get_client_key_secret = Mock(
+            return_value=("test_client_key", "test_client_secret")
+        )
         self.xblock.verify_oauth_body_sign = Mock()
 
     def test_lti20_put_like_delete_success(self):
@@ -241,17 +255,25 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         COMMENT = "ಠ益ಠ"  # pylint: disable=invalid-name
         self.xblock.module_score = SCORE
         self.xblock.score_comment = COMMENT
-        mock_request = self.get_signed_lti20_mock_request(self.GOOD_JSON_PUT_LIKE_DELETE)
+        mock_request = self.get_signed_lti20_mock_request(
+            self.GOOD_JSON_PUT_LIKE_DELETE
+        )
         # Now call the handler
         response = self.xblock.lti_2_0_result_rest_handler(mock_request, "user/abcd")
         # Now assert there's no score
         assert response.status_code == 200
         assert self.xblock.module_score is None
-        assert self.xblock.score_comment == ''
-        (_, evt_type, called_grade_obj), _ = self.runtime.publish.call_args  # pylint: disable=unpacking-non-sequence
-        assert called_grade_obj ==\
-               {'user_id': self.USER_STANDIN.id, 'value': None, 'max_value': None, 'score_deleted': True}
-        assert evt_type == 'grade'
+        assert self.xblock.score_comment == ""
+        (_, evt_type, called_grade_obj), _ = (
+            self.runtime.publish.call_args
+        )  # pylint: disable=unpacking-non-sequence
+        assert called_grade_obj == {
+            "user_id": self.USER_STANDIN.id,
+            "value": None,
+            "max_value": None,
+            "score_deleted": True,
+        }
+        assert evt_type == "grade"
 
     def test_lti20_delete_success(self):
         """
@@ -262,17 +284,23 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         COMMENT = "ಠ益ಠ"  # pylint: disable=invalid-name
         self.xblock.module_score = SCORE
         self.xblock.score_comment = COMMENT
-        mock_request = self.get_signed_lti20_mock_request(b"", method='DELETE')
+        mock_request = self.get_signed_lti20_mock_request(b"", method="DELETE")
         # Now call the handler
         response = self.xblock.lti_2_0_result_rest_handler(mock_request, "user/abcd")
         # Now assert there's no score
         assert response.status_code == 200
         assert self.xblock.module_score is None
-        assert self.xblock.score_comment == ''
-        (_, evt_type, called_grade_obj), _ = self.runtime.publish.call_args  # pylint: disable=unpacking-non-sequence
-        assert called_grade_obj ==\
-               {'user_id': self.USER_STANDIN.id, 'value': None, 'max_value': None, 'score_deleted': True}
-        assert evt_type == 'grade'
+        assert self.xblock.score_comment == ""
+        (_, evt_type, called_grade_obj), _ = (
+            self.runtime.publish.call_args
+        )  # pylint: disable=unpacking-non-sequence
+        assert called_grade_obj == {
+            "user_id": self.USER_STANDIN.id,
+            "value": None,
+            "max_value": None,
+            "score_deleted": True,
+        }
+        assert evt_type == "grade"
 
     def test_lti20_put_set_score_success(self):
         """
@@ -285,23 +313,32 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         # Now assert
         assert response.status_code == 200
         assert self.xblock.module_score == 0.1
-        assert self.xblock.score_comment == 'ಠ益ಠ'
-        (_, evt_type, called_grade_obj), _ = self.runtime.publish.call_args  # pylint: disable=unpacking-non-sequence
-        assert evt_type == 'grade'
-        assert called_grade_obj ==\
-               {'user_id': self.USER_STANDIN.id, 'value': 0.1, 'max_value': 1.0, 'score_deleted': False}
+        assert self.xblock.score_comment == "ಠ益ಠ"
+        (_, evt_type, called_grade_obj), _ = (
+            self.runtime.publish.call_args
+        )  # pylint: disable=unpacking-non-sequence
+        assert evt_type == "grade"
+        assert called_grade_obj == {
+            "user_id": self.USER_STANDIN.id,
+            "value": 0.1,
+            "max_value": 1.0,
+            "score_deleted": False,
+        }
 
     def test_lti20_get_no_score_success(self):
         """
         The happy path for LTI 2.0 GET when there's no score
         """
         self.setup_system_xblock_mocks_for_lti20_request_test()
-        mock_request = self.get_signed_lti20_mock_request(b"", method='GET')
+        mock_request = self.get_signed_lti20_mock_request(b"", method="GET")
         # Now call the handler
         response = self.xblock.lti_2_0_result_rest_handler(mock_request, "user/abcd")
         # Now assert
         assert response.status_code == 200
-        assert response.json == {'@context': 'http://purl.imsglobal.org/ctx/lis/v2/Result', '@type': 'Result'}
+        assert response.json == {
+            "@context": "http://purl.imsglobal.org/ctx/lis/v2/Result",
+            "@type": "Result",
+        }
 
     def test_lti20_get_with_score_success(self):
         """
@@ -312,14 +349,17 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         COMMENT = "ಠ益ಠ"  # pylint: disable=invalid-name
         self.xblock.module_score = SCORE
         self.xblock.score_comment = COMMENT
-        mock_request = self.get_signed_lti20_mock_request(b"", method='GET')
+        mock_request = self.get_signed_lti20_mock_request(b"", method="GET")
         # Now call the handler
         response = self.xblock.lti_2_0_result_rest_handler(mock_request, "user/abcd")
         # Now assert
         assert response.status_code == 200
-        assert response.json ==\
-               {'@context': 'http://purl.imsglobal.org/ctx/lis/v2/Result',
-                '@type': 'Result', 'resultScore': SCORE, 'comment': COMMENT}
+        assert response.json == {
+            "@context": "http://purl.imsglobal.org/ctx/lis/v2/Result",
+            "@type": "Result",
+            "resultScore": SCORE,
+            "comment": COMMENT,
+        }
 
     UNSUPPORTED_HTTP_METHODS = ["OPTIONS", "HEAD", "POST", "TRACE", "CONNECT"]
 
@@ -331,7 +371,9 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         mock_request = self.get_signed_lti20_mock_request(self.GOOD_JSON_PUT)
         for bad_method in self.UNSUPPORTED_HTTP_METHODS:
             mock_request.method = bad_method
-            response = self.xblock.lti_2_0_result_rest_handler(mock_request, "user/abcd")
+            response = self.xblock.lti_2_0_result_rest_handler(
+                mock_request, "user/abcd"
+            )
             assert response.status_code == 404
 
     def test_lti20_request_handler_bad_headers(self):
@@ -368,7 +410,9 @@ class LTI20RESTResultServiceTest(unittest.TestCase):
         Test that we get a 404 when the supplied user does not exist
         """
         self.setup_system_xblock_mocks_for_lti20_request_test()
-        self.runtime._services['user'] = StubUserService(user=None)  # pylint: disable=protected-access
+        self.runtime._services["user"] = StubUserService(
+            user=None
+        )  # pylint: disable=protected-access
         mock_request = self.get_signed_lti20_mock_request(self.GOOD_JSON_PUT)
         response = self.xblock.lti_2_0_result_rest_handler(mock_request, "user/abcd")
         assert response.status_code == 404
