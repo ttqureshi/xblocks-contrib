@@ -70,6 +70,7 @@ import oauthlib.oauth1
 from django.conf import settings
 from lxml import etree
 from oauthlib.oauth1.rfc5849 import signature
+from opaque_keys.edx.keys import UsageKey
 from pytz import UTC
 from webob import Response
 from web_fragments.fragment import Fragment
@@ -373,6 +374,26 @@ class LTIBlock(
         "hide_launch", "description", "lti_id", "launch_url", "open_in_a_new_page",
         "ask_to_send_email", "ask_to_send_username", "has_score", "weight",
     )
+
+    @property
+    def course_id(self):
+        return self.location.course_key
+
+    @property
+    def category(self):
+        return self.scope_ids.block_type
+
+    @property
+    def location(self):
+        return self.scope_ids.usage_id
+
+    @location.setter
+    def location(self, value):
+        assert isinstance(value, UsageKey)
+        self.scope_ids = self.scope_ids._replace(
+            def_id=value,  # Note: assigning a UsageKey as def_id is OK in old mongo / import system but wrong in split
+            usage_id=value,
+        )
 
     def max_score(self):
         return self.weight if self.has_score else None
