@@ -42,7 +42,7 @@ What is supported:
         b.) Currently only action "update" is supported. "Read", and "delete"
             actions initially weren't required.
     B) LTI 2.0 Result Service JSON REST endpoint
-       (http://www.imsglobal.org/lti/ltiv2p0/uml/purl.imsglobal.org/vocab/lis/v2/outcomes/Result/service.html)
+        (http://www.imsglobal.org/lti/ltiv2p0/uml/purl.imsglobal.org/vocab/lis/v2/outcomes/Result/service.html)
         a.) Discovery of all such LTI http endpoints for a course.  External tools GET from this discovery
             endpoint and receive URLs for interacting with individual grading units.
             (see lms/djangoapps/courseware/views/views.py:get_course_lti_endpoints)
@@ -561,27 +561,27 @@ class LTIBlock(
 
         <?xml version = "1.0" encoding = "UTF-8"?>
             <imsx_POXEnvelopeRequest xmlns = "some_link (may be not required)">
-              <imsx_POXHeader>
-                <imsx_POXRequestHeaderInfo>
-                  <imsx_version>V1.0</imsx_version>
-                  <imsx_messageIdentifier>528243ba5241b</imsx_messageIdentifier>
-                </imsx_POXRequestHeaderInfo>
-              </imsx_POXHeader>
-              <imsx_POXBody>
-                <replaceResultRequest>
-                  <resultRecord>
-                    <sourcedGUID>
-                      <sourcedId>feb-123-456-2929::28883</sourcedId>
-                    </sourcedGUID>
-                    <result>
-                      <resultScore>
-                        <language>en-us</language>
-                        <textString>0.4</textString>
-                      </resultScore>
-                    </result>
-                  </resultRecord>
-                </replaceResultRequest>
-              </imsx_POXBody>
+                <imsx_POXHeader>
+                    <imsx_POXRequestHeaderInfo>
+                    <imsx_version>V1.0</imsx_version>
+                    <imsx_messageIdentifier>528243ba5241b</imsx_messageIdentifier>
+                    </imsx_POXRequestHeaderInfo>
+                </imsx_POXHeader>
+                <imsx_POXBody>
+                    <replaceResultRequest>
+                    <resultRecord>
+                        <sourcedGUID>
+                        <sourcedId>feb-123-456-2929::28883</sourcedId>
+                        </sourcedGUID>
+                        <result>
+                        <resultScore>
+                            <language>en-us</language>
+                            <textString>0.4</textString>
+                        </resultScore>
+                        </result>
+                    </resultRecord>
+                    </replaceResultRequest>
+                </imsx_POXBody>
             </imsx_POXEnvelopeRequest>
 
         Example of correct/incorrect answer XML body:: see response_xml_template.
