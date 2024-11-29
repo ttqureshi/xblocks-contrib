@@ -1,0 +1,19 @@
+{% load static %}
+
+<script type="text/javascript">
+    window.PLATFORM_NAME = "{{ settings.PLATFORM_NAME|escapejs }}";
+
+    {% if enable_discussion_home_panel %}
+        window.ENABLE_DISCUSSION_HOME_PANEL = true;
+    {% else %}
+        window.ENABLE_DISCUSSION_HOME_PANEL = false;
+    {% endif %}
+
+    {% if enable_daily_digest %}
+        window.ENABLE_FORUM_DAILY_DIGEST = true;
+    {% else %}
+        window.ENABLE_FORUM_DAILY_DIGEST = false;
+    {% endif %}
+</script>
+
+<script type="text/javascript" src="{% static 'xblocks_contrib/discussion/static/templates/templates.underscore' %}"></script>

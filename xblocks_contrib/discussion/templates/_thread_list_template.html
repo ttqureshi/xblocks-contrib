@@ -1,0 +1,53 @@
+{% load i18n %}
+
+<script type="text/template" id="thread-list-template">
+    <div class="forum-nav-thread-list-wrapper" id="sort-filter-wrapper" tabindex="-1">
+        <div class="forum-nav-refine-bar">
+            <label class="forum-nav-filter-main">
+                {# Translators: This labels a filter menu in forum navigation #}
+                <span class="sr">{% trans "Filter:" %}</span>
+                <select class="forum-nav-filter-main-control">
+                    {# Translators: This is a menu option for showing all forum threads unfiltered #}
+                    <option value="all">{% trans "Show all posts" %}</option>
+                    {# Translators: This is a menu option for showing only unread forum threads #}
+                    <option value="unread">{% trans "Unread posts" %}</option>
+                    {# Translators: This is a menu option for showing only unanswered forum question threads #}
+                    <option value="unanswered">{% trans "Unanswered posts" %}</option>
+                    {% if flag_moderator %}
+                        {# Translators: This is a menu option for showing only forum threads flagged for abuse #}
+                        <option value="flagged">{% trans "Flagged" %}</option>
+                    {% endif %}
+                </select>
+            </label>
+
+            {% if isDiscussionDivisionEnabled and isPrivilegedUser %}
+            <label class="forum-nav-filter-cohort">
+                {# Translators: This labels a group menu in forum navigation #}
+                <span class="sr">{% trans "Group:" %}</span>
+                <select class="forum-nav-filter-cohort-control">
+                    <option value="">{% trans "in all groups" %}</option>
+                    {# groups is not iterable sometimes because inline discussions xmodule doesn't pass it #}
+                    {% for group in groups or [] %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            {% endif %}
+
+            <label class="forum-nav-sort">
+                {# Translators: This labels a sort menu in forum navigation #}
+                <span class="sr">{% trans "Sort:" %}</span>
+                <select class="forum-nav-sort-control">
+                    {# Translators: This is a menu option for sorting forum threads by recent activity #}
+                    <option value="activity">{% trans "by recent activity" %}</option>
+                    {# Translators: This is a menu option for sorting forum threads by most activity #}
+                    <option value="comments">{% trans "by most activity" %}</option>
+                    {# Translators: This is a menu option for sorting forum threads by most votes #}
+                    <option value="votes">{% trans "by most votes" %}</option>
+                </select>
+            </label>
+        </div>
+        <div class="search-alerts"></div>
+        <ul class="forum-nav-thread-list"></ul>
+    </div>
+</script>

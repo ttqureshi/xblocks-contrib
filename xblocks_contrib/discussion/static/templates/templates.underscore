@@ -1,0 +1,865 @@
+<script aria-hidden="true" type="text/template" id="thread-template">
+    <article class="discussion-article" data-id="{{ id }}" tabindex="-1">
+        <div class="thread-wrapper">
+            <div class="thread-main-wrapper">
+                <div class="thread-content-wrapper"></div>
+                <div class="post-extended-content">
+                    <ol class="responses js-marked-answer-list"></ol>
+                </div>
+            </div>
+            <div class="post-extended-content thread-responses-wrapper">
+                <div class="response-btn-count-wrapper">
+                    {% if not readOnly %}
+                    <div class="add-response">
+                        <button class="btn btn-outline-primary btn-small add-response-btn">
+                            {{ _("Add a Response") }}
+                        </button>
+                    </div>
+                    {% endif %}
+                    <div class="response-count"></div>
+                </div>
+                <ol class="responses js-response-list"></ol>
+                <div class="response-pagination"></div>
+                <div class="post-status-closed bottom-post-status" style="display: none">
+                    {{ _("This thread is closed.") }}
+                </div>
+                {% if can_create_comment and not readOnly %}
+                <form class="discussion-reply-new" data-id="{{ id }}">
+                    <h{{ startHeader }} class="add-response">{{ _("Add a response:") }}</h{{ startHeader }} >
+
+                    <ul class="discussion-errors"></ul>
+                    <div class="reply-body" data-id="{{ id }}"></div>
+                    <div class="reply-post-control">
+                        <button class="btn btn-outline-primary discussion-submit-post control-button">{{ _("Submit") }}</button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+</script>
+<script aria-hidden="true" type="text/template" id="thread-show-template">
+    <div class="discussion-post">
+        <header class="post-header">
+            {% if not readOnly %}
+            <div class="post-header-actions">
+                <%= /* xss-lint: disable=underscore-not-escaped */
+                _.template(
+                    $('#forum-actions').html())(
+                    {
+                        contentId: cid,
+                        contentType: 'post',
+                        primaryActions: ['vote', 'follow'],
+                        secondaryActions: ['pin', 'edit', 'delete', 'report', 'close'],
+                        readOnly: readOnly
+                    }
+                )
+                %>
+            </div>
+            {% endif %}
+            <div class="post-header-content">
+                <h{{ startHeader }} class="post-title"><%- title %></h{{ startHeader }}>
+                <p data-hj-suppress class="posted-details">
+                <%
+                var timeAgoHtml = interpolate(
+                    '<span class="timeago" title="%(created_at)s">%(created_at)s</span>',
+                    {created_at: created_at},
+                    true
+                );
+                var postedTimeAgoMessage;
+                if (thread_type == 'discussion') {
+                    postedTimeAgoMessage = gettext('discussion posted %(time_ago)s by %(author)s');
+                } else {
+                    postedTimeAgoMessage = gettext('question posted %(time_ago)s by %(author)s');
+                }
+                %>
+                <%= /* xss-lint: disable=underscore-not-escaped */
+                interpolate(_.escape(postedTimeAgoMessage), {time_ago: timeAgoHtml, author: author_display}, true) %>
+                </p>
+                <div class="post-labels">
+                    <span class="post-label post-label-pinned">
+                        <span class="icon fa fa-thumb-tack" aria-hidden="true"></span><%- gettext("Pinned") %>
+                    </span>
+                    <span class="post-label post-label-reported">
+                        <span class="icon fa fa-flag" aria-hidden="true"></span><%- gettext("Reported") %>
+                    </span>
+                    <span class="post-label post-label-closed">
+                        <span class="icon fa fa-lock" aria-hidden="true"></span><%- gettext("Closed") %>
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <div class="post-body"><%- body %></div>
+        <div class="post-context">
+            {% if mode == "tab" and obj.courseware_url %}
+            <%
+            var courseware_title_linked = interpolate(
+                '<a href="%(courseware_url)s">%(courseware_title)s</a>',
+                {courseware_url: courseware_url, courseware_title: _.escape(courseware_title)},
+                true
+            );
+            %>
+            <%= /* xss-lint: disable=underscore-not-escaped */
+            interpolate(
+                _.escape(gettext('Related to: %(courseware_title_linked)s')),
+                {courseware_title_linked: courseware_title_linked},
+                true
+            )
+            %>
+            {% endif %}
+            <div class="group-visibility-label">
+                {% if obj.group_name and is_commentable_divided %}
+                <%= interpolate(
+                    gettext('This post is visible only to %(group_name)s.'),
+                    {group_name: obj.group_name},
+                    true
+                ) %>
+                {% else %}
+                <%- gettext('This post is visible to everyone.') %>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="thread-edit-template">
+    <h{{ startHeader }} class="thread-title"><%- gettext("Editing post") %></h{{ startHeader }}>
+    <ul class="post-errors"></ul>
+    <div class="forum-edit-post-form-wrapper"></div>
+    <div class="post-field">
+        <label class="field-label" for='edit-discussion-forum-title'>
+            <span class="field-label-text"><%- gettext("Title") %></span>
+            <div class="field-help" id="field_help_title">
+                <%- gettext("Add a clear and descriptive title to encourage participation. (Required)") %>
+            </div>
+            <input id='edit-discussion-forum-title' aria-describedby="field_help_title" type="text" class="edit-post-title field-input" name="title" value="<%- title %>">
+        </label>
+    </div>
+    <div class="post-field">
+        <p class="sr-only field-help" id="edit-post-editor-description"><%- gettext('Edit your post below.') %></p>
+        <div class="edit-post-body" aria-describedby="edit-post-editor-description" name="body"><%- body %></div>
+    </div>
+    <button type="submit" id="edit-post-submit" class="btn btn-primary submit post-update"><%- gettext("Update post") %></button>
+    <button class="btn btn-outline-primary post-cancel"><%- gettext("Cancel") %></button>
+</script>
+<script aria-hidden="true" type="text/template" id="thread-response-template">
+    <div class="discussion-response"></div>
+    <button class="btn-link action-show-comments">
+        <%
+        var fmts = ngettext("Show Comment (%(num_comments)s)", "Show Comments (%(num_comments)s)", comments.length);
+        print(interpolate(fmts, {num_comments: comments.length}, true));
+        %>
+        <span class="icon fa fa-caret-down" aria-hidden="true"></span>
+    </button>
+    <ol class="comments">
+        <li class="new-comment">
+            {% if create_sub_comment and not readOnly %}
+            <form class="comment-form" data-id="<%- wmdId %>">
+                <ul class="discussion-errors"></ul>
+                <label class="sr" for="add-new-comment-<%- wmdId %>"><%- gettext("Add a comment") %></label>
+                <div class="comment-body" id="add-new-comment-<%- wmdId %>" data-id="<%- wmdId %>"
+                data-placeholder="<%- gettext('Add a comment') %>"></div>
+                <div class="comment-post-control">
+                    <button class="btn btn-primary discussion-submit-comment control-button"><%- gettext("Submit") %></button>
+                </div>
+            </form>
+            {% endif %}
+        </li>
+    </ol>
+</script>
+<script aria-hidden="true" type="text/template" id="thread-response-show-template">
+    <header class="response-header">
+        <div data-hj-suppress class="response-header-content">
+            <%= HtmlUtils.HTML(author_display) %>
+            <p class="posted-details">
+                <span class="timeago" title="<%= HtmlUtils.HTML(created_at) %>"><%= HtmlUtils.HTML(created_at) %></span>
+                {% if obj.endorsement and obj.endorsed %}
+                    -
+                    <%
+                    var fmt = null;
+                    if (thread.get("thread_type") == "question") {
+                        if (endorsement.username) {
+                            fmt = gettext("marked as answer %(time_ago)s by %(user)s");
+                        } else {
+                            fmt = gettext("marked as answer %(time_ago)s");
+                        }
+                    } else {
+                        if (endorsement.username) {
+                            fmt = gettext("endorsed %(time_ago)s by %(user)s");
+                        } else {
+                            fmt = gettext("endorsed %(time_ago)s");
+                        }
+                    }
+                    var time_ago = interpolate(
+                        '<span class="timeago" title="%(time)s">%(time)s</span>',
+                        {time: endorsement.time},
+                        true
+                    );
+                    %>
+                    <%= /* xss-lint: disable=underscore-not-escaped */
+                        interpolate(fmt, {time_ago: time_ago, user: endorser_display}, true) %>
+                {% endif %}
+            </p>
+            <div class="post-labels">
+                <span class="post-label post-label-reported">
+                    <span class="icon fa fa-flag" aria-hidden="true"></span><%- gettext("Reported") %>
+                </span>
+            </div>
+        </div>
+        <div class="response-header-actions">
+            <%= /* xss-lint: disable=underscore-not-escaped */
+                _.template(
+                    $('#forum-actions').html())(
+                    {
+                        contentId: cid,
+                        contentType: 'response',
+                        primaryActions: ['vote', thread.get('thread_type') == 'question' ? 'answer' : 'endorse'],
+                        secondaryActions: ['edit', 'delete', 'report'],
+                        readOnly: readOnly
+                    }
+                )
+            %>
+        </div>
+    </header>
+
+    <div class="response-body"><%- body %></div>
+</script>
+<script aria-hidden="true" type="text/template" id="thread-response-edit-template">
+    <div class="edit-post-form">
+        <h{{ startHeader }}>{{ gettext("Editing response") }}</h{{ startHeader }}>
+        <ul class="edit-post-form-errors"></ul>
+        <div class="edit-post-body" name="body" data-id="{{ id }}">{{ body }}</div>
+        <button type="submit" id="edit-response-submit" class="btn btn-primary post-update">{{ gettext("Update response") }}</button>
+        <button class="btn btn-outline-primary post-cancel">{{ gettext("Cancel") }}</button>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="response-comment-show-template">
+    <div class="discussion-comment" id="comment_{{ id }}">
+      <div class="response-body">{{ body }}</div>
+      {% comment %}
+        {# No need for xss-lint disable comment as Django automatically escapes variables by default #}
+      {% endcomment %}
+      <%= _.template($('#forum-actions').html())({
+          contentId: cid,
+          contentType: 'comment',
+          primaryActions: [],
+          secondaryActions: ['edit', 'delete', 'report'],
+          readOnly: readOnly
+      }) %>
+      <p data-hj-suppress class="posted-details">
+        {% comment %}
+        Using Django's `interpolate` to format the `time_ago` string.
+        {% endcomment %}
+        <%
+        var time_ago = interpolate(
+          '<span class="timeago" title="%(time)s">%(time)s</span>',
+          {time: created_at},
+          true
+        );
+        %>
+        <%= interpolate(
+          gettext("posted %(time_ago)s by %(author)s"),
+          {time_ago: time_ago, author: author_display},
+          true
+        ) %>
+      </p>
+      <div class="post-labels">
+        <span class="post-label post-label-reported">
+          <span class="icon fa fa-flag" aria-hidden="true"></span>{{ gettext("Reported") }}
+        </span>
+      </div>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="response-comment-edit-template">
+    <div class="edit-post-form" id="comment_{{ id }}">
+        <h{{ startHeader }}>{{ gettext("Editing comment") }}</h{{ startHeader }}>
+        <ul class="edit-comment-form-errors"></ul>
+        <div class="edit-comment-body" name="body" data-id="{{ id }}">{{ body }}</div>
+        <button type="submit" id="edit-comment-submit" class="btn btn-primary post-update">{{ gettext("Update comment") }}</button>
+        <button class="btn btn-outline-primary post-cancel">{{ gettext("Cancel") }}</button>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="thread-list-item-template">
+    <li data-id="{{ id }}" class="forum-nav-thread{% if not hideReadState and neverRead %} never-read{% endif %}">
+      <a href="{{ threadUrl }}" class="forum-nav-thread-link">
+        <div class="forum-nav-thread-wrapper-0">
+          {% comment %}
+            Use `thread_type` to determine the icon and label.
+          {% endcomment %}
+          <%
+          var icon_class, sr_text;
+          if (thread_type === "discussion") {
+              icon_class = "fa-comments";
+              sr_text = gettext("discussion");
+          } else if (endorsed) {
+              icon_class = "fa-check-square-o";
+              sr_text = gettext("answered question");
+          } else {
+              icon_class = "fa-question";
+              sr_text = gettext("unanswered question");
+          }
+          %>
+          <span class="sr"><%= HtmlUtils.HTML(sr_text) %></span>
+          <span class="icon fa {{ icon_class }}" aria-hidden="true"></span>
+        </div>
+        <div class="forum-nav-thread-wrapper-1">
+          <span class="forum-nav-thread-title">{{ title }}</span>
+          {% if showThreadPreview %}
+            <div class="thread-preview-body">{{ threadPreview }}</div>
+          {% endif %}
+          {% if subscribed is not defined %} 
+            {% set subscribed = null %}
+          {% endif %}
+          {% if pinned or subscribed or staff_authored or community_ta_authored %}
+            <ul class="forum-nav-thread-labels">
+            {% if pinned %}
+              <li class="post-label post-label-pinned">
+                <span class="icon fa fa-thumb-tack" aria-hidden="true"></span>
+                {{ gettext("Pinned") }}
+              </li>
+            {% endif %}
+            {% if subscribed %}
+              <li class="post-label post-label-following">
+                <span class="icon fa fa-star" aria-hidden="true"></span>
+                {{ gettext("Following") }}
+              </li>
+            {% endif %}
+            {% if staff_authored %}
+              <li class="post-label post-label-by-staff">
+                <span class="icon fa fa-user" aria-hidden="true"></span>
+                {{ gettext("Staff") }}
+              </li>
+            {% endif %}
+            {% if community_ta_authored %}
+              <li class="post-label post-label-by-community-ta">
+                <span class="icon fa fa-user" aria-hidden="true"></span>
+                {{ gettext("Community TA") }}
+              </li>
+            {% endif %}
+            </ul>
+          {% endif %}
+        </div>
+        <div class="forum-nav-thread-wrapper-2">
+          {% comment %}
+          Format votes count for singular/plural.
+          {% endcomment %}
+          <%
+          var fmt = ngettext(
+               "%(votes_count)s%(span_start)s vote %(span_end)s",
+               "%(votes_count)s%(span_start)s votes %(span_end)s",
+               votes['up_count']
+          );
+          %>
+          <span class="forum-nav-thread-votes-count">
+            +<%= interpolate(fmt, {
+                votes_count: votes['up_count'],
+                span_start: '<span class="sr">',
+                span_end: '</span>'
+            }, true) %>
+          </span>
+          {% if not hideReadState and not neverRead and unread_comments_count > 0 %}
+            <span class="forum-nav-thread-unread-comments-count">
+              {{ "{unread_comments_count} new" | format(unread_comments_count) }}
+            </span>
+          {% endif %}
+          <span class="forum-nav-thread-comments-count">
+            <%
+            var fmt;
+            var data = {
+                'span_sr_open': '<span class="sr">',
+                'span_close': '</span>',
+                'unread_comments_count': unread_comments_count + (read ? 0 : 1),
+                'comments_count': comments_count + 1
+            };
+            if (unread_comments_count > 0) {
+                fmt = gettext('%(comments_count)s %(span_sr_open)scomments (%(unread_comments_count)s unread comments)%(span_close)s');
+            } else {
+                fmt = gettext('%(comments_count)s %(span_sr_open)scomments %(span_close)s');
+            }
+            %>
+            <%= interpolate(fmt, data, true) %>
+          </span>
+        </div>
+      </a>
+    </li>
+</script>
+<script aria-hidden="true" type="text/template" id="search-alert-template">
+    <div class="search-alert {{ css_class }}" id="search-alert-{{ cid }}">
+        <div class="search-alert-content">
+            <p class="message">{{ messageHtml|safe }}</p>
+        </div>
+    
+        <div class="search-alert-controls">
+            <button class="btn-link dismiss control control-dismiss" title="{{ _('Close') }}">
+                <span class="icon fa fa-remove" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="new-post-template">
+    <form class="forum-new-post-form">
+        <h{{ startHeader }} class="thread-title">{{ _('Add a Post') }}</h{{ startHeader }}>
+    
+        {% if mode == 'inline' %}
+            <button class="btn btn-outline-primary btn-default add-post-cancel">
+                <span class="sr">{{ _('Cancel') }}</span>
+                <span class="fa fa-close" aria-hidden="true"></span>
+            </button>
+        {% endif %}
+        <ul class="post-errors" style="display: none"></ul>
+        <div class="forum-new-post-form-wrapper"></div>
+    
+        {% if group_options %}
+        <div class="post-field group-selector-wrapper {% if not is_commentable_divided %}disabled{% endif %}">
+            <label class="field-label">
+                <span class="field-label-text">{{ _('Visible to') }}</span>
+                <div class="field-help" id="field_help_visible_to">
+                    {{ _('Discussion admins, moderators, and TAs can make their posts visible to all students or specify a single group.') }}
+                </div>
+                <div class="field-input">
+                    <select aria-describedby="field_help_visible_to" class="post-topic field-input js-group-select" name="group_id" {% if not is_commentable_divided %}disabled{% endif %}>
+                        <option value="">{{ _('All Groups') }}</option>
+                        {% for opt in group_options %}
+                        <option value="{{ opt.value }}" {% if opt.selected %}selected{% endif %}>{{ opt.text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </label>
+        </div>
+        {% endif %}
+    
+        <div class="post-field group-visibility" id="wrapper-visibility-message"></div>
+        <div class="post-field">
+            <label class="field-label" for='discussion-forum-title'>
+                <span class="field-label-text">{{ _('Title') }}</span>
+                <div class="field-help" id="field_help_title">
+                    {{ _('Add a clear and descriptive title to encourage participation. (Required)') }}
+                </div>
+                <div>
+                    <input id='discussion-forum-title' aria-describedby="field_help_title" type="text" class="js-post-title field-input" name="title">
+                </div>
+            </label>
+        </div>
+    
+        <div>
+            <span class="field-label-text field-label-text-full" id="new-post-editor-description">{{ _('Your question or idea (required)') }}</span>
+            <div class="js-post-body editor" aria-describedby="new-post-editor-description" name="body"></div>
+        </div>
+    
+        <div class="post-options">
+            <label for="follow" class="field-label label-inline">
+                <input id="follow" type="checkbox" name="follow" class="field-input input-checkbox" checked>
+                <span class="field-input-label">
+                    <span class="icon fa fa-star" aria-hidden="true"></span>{{ _('follow this post') }}
+                </span>
+            </label>
+    
+            {% if allow_anonymous_to_peers %}
+            <label for="anonymous_to_peers" class="field-label label-inline">
+                <input id="anonymous_to_peers" type="checkbox" name="anonymous_to_peers" class="field-input input-checkbox">
+                <span class="field-input-label">{{ _('post anonymously to classmates') }}</span>
+            </label>
+            {% endif %}
+        </div>
+    
+        <div>
+            <button type="submit" class="btn btn-primary submit">{{ _('Submit') }}</button>
+            <button type="button" class="btn btn-outline-primary cancel">{{ _('Cancel') }}</button>
+        </div>
+    </form>
+</script>
+<script aria-hidden="true" type="text/template" id="new-post-menu-entry-template">
+    <option class="topic-title" data-discussion-id="{{ id }}" data-divided="{{ is_divided }}">{{ text }}</option>
+</script>
+<script aria-hidden="true" type="text/template" id="new-post-menu-category-template">
+    <optgroup label="{{ text }}">
+        {{ entries|safe }}
+    </optgroup>
+</script>
+<script aria-hidden="true" type="text/template" id="new-post-alert-template">
+    <div class="alert alert-error pattern-library-shim" role="alert" aria-labelledby="alert-title-error-{{ alertId }}" tabindex="-1">
+        <span class="icon alert-icon fa fa-warning" aria-hidden="true"></span>
+    
+        <div class="alert-message">
+            <h3 class="sr-only alert-title" id="alert-title-error-{{ alertId }}">
+                {{ _('Error posting your message.') }}
+            </h3>
+    
+            <p class="alert-copy">
+                {{ message }}
+            </p>
+        </div>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="new-post-visibility-template">
+    {% if group_name %}
+        {{ _('This post will be visible only to %(group_name)s.')|format(group_name=group_name) }}
+    {% else %}
+        {{ _('This post will be visible to everyone.') }}
+    {% endif %}
+</script>
+<script aria-hidden="true" type="text/template" id="topic-template">
+    <div class="field-label">
+        <label for="topic" class="field-label-text">
+            {{ _('Topic area') }}
+        </label>
+        <div class="field-help" id="field_help_topic_area">
+            {{ _('Add your post to a relevant topic to help others find it. (Required)') }}
+        </div>
+    </div>
+    <div class="field-input">
+        <select id="topic" class="post-topic field-input" aria-describedby="field_help_topic_area wrapper-visibility-message" required>
+            {{ topics_html|safe }}
+        </select>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="post-user-display-template">
+    {% if username %}
+    <a href="{{ user_url }}" class="username">{{ username }}</a>
+        {% if is_community_ta %}
+        <span class="user-label-community-ta">{{ _('(Community TA)') }}</span>
+        {% elif is_staff %}
+        <span class="user-label-staff">{{ _('(Staff)') }}</span>
+        {% endif %}
+    {% else %}
+        {{ _('anonymous') }}
+    {% endif %}
+</script>
+<script aria-hidden="true" type="text/template" id="inline-discussion-template">
+    <section class="discussion inline-discussion" data-discussion-id="{{ discussionId }}">
+        <div class="add_post_btn_container {% if read_only %} is-hidden {% endif %}">
+            <button class="btn-link new-post-btn">{{ _('Add a Post') }}</button>
+        </div>
+    
+        <article class="new-post-article is-hidden"></article>
+    
+        <div class="inline-discussion-thread-container">
+            <section class="inline-threads" data-discussion-id="{{ discussionId }}">
+            </section>
+    
+            <div class="inline-thread">
+                <div class="forum-nav-bar">
+                    <button class="btn-link all-posts-btn">
+                        <span class="icon fa fa-chevron-prev" aria-hidden="true"></span>
+                        <span aria-hidden="true">{{ _('All Posts') }}</span>
+                        <span class="sr-only">{{ _('Return to all posts') }}</span>
+                    </button>
+                </div>
+                <div class="forum-content">
+                </div>
+            </div>
+        </div>
+    </section>
+</script>
+<script aria-hidden="true" type="text/template" id="pagination-template">
+    <nav class="discussion-paginator">
+        <ol>
+            {% if previous %}
+                <li class="previous-page"><a class="discussion-pagination" href="{{ previous.url }}" data-page-number="{{ previous.number }}">&lt; {{ _('Previous') }}</a></li>
+            {% endif %}
+            {% if first %}
+                <li class="first-page"><a class="discussion-pagination" href="{{ first.url }}" data-page-number="1">1</a></li>
+            {% endif %}
+            {% if leftdots %}
+                <li class="previous-ellipses">{{ _('…') }}</li>
+            {% endif %}
+    
+            {% for page in lowPages %}
+                <li class="lower-page"><a class="discussion-pagination" href="{{ page.url }}" data-page-number="{{ page.number }}">{{ page.number }}</a></li>
+            {% endfor %}
+            
+            <li class="current-page"><span>{{ page }}</span></li>
+    
+            {% for page in highPages %}
+                <li class="higher-page"><a class="discussion-pagination" href="{{ page.url }}" data-page-number="{{ page.number }}">{{ page.number }}</a></li>
+            {% endfor %}
+    
+            {% if rightdots %}
+                <li class="next-ellipses">{{ _('…') }}</li>
+            {% endif %}
+            {% if last %}
+                <li class="last-page"><a class="discussion-pagination" href="{{ last.url }}" data-page-number="{{ last.number }}">{{ last.number }}</a></li>
+            {% endif %}
+            {% if next %}
+                <li class="next-page"><a class="discussion-pagination" href="{{ next.url }}" data-page-number="{{ next.number }}">{{ _('Next') }} &gt;</a></li>
+            {% endif %}
+        </ol>
+    </nav>
+</script>
+<script aria-hidden="true" type="text/template" id="profile-thread-template">
+    <article class="discussion-article" data-id="{{ id }}">
+        <div class="discussion-post">
+            <header>
+                <h3>{{ title }}</h3>
+                <p class="posted-details">
+                    {% if user %}
+                        <a href="{{ user.url }}" class="username">{{ user.username }}</a>
+                    {% else %}
+                        {{ _('anonymous') }}
+                    {% endif %}
+    
+                    <span class="timeago" title="{{ created_at }}">{{ created_at }}</span>
+                    <span class="post-status-closed top-post-status" style="display: none">
+                        &bull; {{ _('This thread is closed.') }}
+                    </span>
+                </p>
+            </header>
+            <div class="post-body">{{ abbreviatedBody|safe }}</div>
+        </div>
+        <div class="post-tools">
+            <a href="{{ permalink }}">{{ _('View discussion') }}</a>
+        </div>
+    </article>
+</script>
+<script aria-hidden="true" type="text/template" id="customwmd-prompt-template">
+    <h4 id="editor-dialog-title">{{ title }}</h4>
+    <div role="status" id="wmd-editor-dialog-form-errors" class="sr" tabindex="-1"></div>
+    <div>
+        <form class="form">
+            <fieldset class="field-group">
+                <legend class="form-group-hd sr">{{ title }}</legend>
+                <div class="field {{ uploadFieldClass }}">
+                    <label id="new-url-input-label" for="new-url-input" class="field-label">
+                        {{ urlLabel }}</label>
+                    <input type="text" id="new-url-input" class="field-input input-text" aria-describedby="new-url-input-help">
+                    {% if imageUploadHandler %}
+                        <button id="file-upload-proxy" class="btn btn-primary btn-base form-btn">
+                            {{ chooseFileText }}
+                        </button>
+                        <input type="file" name="file-upload" id="file-upload" style="display:none;"/>
+                    {% endif %}
+                    <div id="new-url-input-field-message" class="field-message has-error" style="display:none">
+                        <span class="field-message-content">{{ urlError }}</span>
+                    </div>
+                    <div id="new-url-input-help" class="field-hint">
+                        {{ urlHelp }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="new-url-desc-input" class="field-label">{{ urlDescLabel }}</label>
+                    <input type="text" id="new-url-desc-input" class="field-input input-text" required aria-describedby="new-url-desc-input-help">
+                    <div id="new-url-desc-input-field-message" class="field-message has-error" style="display:none">
+                        <span class="field-message-content">{{ descError }}</span>
+                    </div>
+                    <div id="new-url-desc-input-help" class="field-hint">
+                        {{ urlDescHelp }}
+                        {% if urlDescHelpLink %}
+                            <a href="{{ urlDescHelpLink.href }}">
+                                {{ urlDescHelpLink.text }}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field">
+                    {% if imageUploadHandler %}
+                        <label for="img-is-decorative" class="field-label label-inline">
+                            <input type="checkbox" id="img-is-decorative" class="field-input input-checkbox">
+                            <span class="field-input-label">{{ imageIsDecorativeLabel }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-actions">
+                <input type="button" id="new-link-image-ok" class="btn btn-primary form-btn" value="{{ okText }}" />
+                <input type="button" id="new-link-image-cancel" class="btn btn-outline-primary form-btn" value="{{ cancelText }}" >
+            </div>
+        </form>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="nav-loading-template">
+    <li class='forum-nav-load-more'>
+        <button class='btn-link forum-nav-load-more-link'>
+            {{ _('Load more') }}
+        </button>
+    </li>
+</script>
+<script aria-hidden="true" type="text/template" id="thread-type-template">
+    <div class="post-field">
+    <fieldset>
+        <legend class="field-label">
+            <span class="field-label-text">
+                {% trans "Post type" %}
+            </span>
+        </legend>
+        <div class="field-help" id="field_help_post_type">
+            {% trans "Questions raise issues that need answers. Discussions share ideas and start conversations. (Required)" %}
+        </div>
+        <div class="field-label">
+            <label for="{{ form_id|add:"-post-type-question" }}" class="post-type-label">
+                <input aria-describedby="field_help_post_type" type="radio" name="{{ form_id|add:"-post-type" }}" class="field-input input-radio" id="{{ form_id|add:"-post-type-question" }}" value="question">
+                <span class="field-input-label">
+                    <span class="icon fa fa-question" aria-hidden="true"></span>
+                    {% trans "Question" %}
+                </span>
+            </label>
+            <label for="{{ form_id|add:"-post-type-discussion" }}" class="post-type-label">
+                <input aria-describedby="field_help_post_type" type="radio" name="{{ form_id|add:"-post-type" }}" class="field-input input-radio" id="{{ form_id|add:"-post-type-discussion" }}" value="discussion" checked>
+                <span class="field-input-label">
+                    <span class="icon fa fa-comments" aria-hidden="true"></span>
+                    {% trans "Discussion" %}
+                </span>
+            </label>
+        </div>
+    </fieldset>
+    </div>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-endorse">
+    <li class="actions-item">
+        <button class="btn-link action-button action-endorse" role="checkbox" aria-checked="false">
+            <span class="sr">{% trans "Endorse" %}</span>
+            <span class="action-label" aria-hidden="true">
+                <span class="label-unchecked">{% trans "Endorse" %}</span>
+                <span class="label-checked">{% trans "Unendorse" %}</span>
+            </span>
+            <span class="action-icon"><span class="icon fa fa-check" aria-hidden="true"></span></span>
+        </button>
+    </li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-answer">
+<li class="actions-item">
+    <button class="btn-link action-button action-answer" role="checkbox" aria-checked="false">
+        <span class="sr">{% trans "Mark as Answer" %}</span>
+        <span class="action-label" aria-hidden="true">
+            <span class="label-unchecked">{% trans "Mark as Answer" %}</span>
+            <span class="label-checked">{% trans "Unmark as Answer" %}</span>
+        </span>
+        <span class="action-icon"><span class="icon fa fa-check" aria-hidden="true"></span></span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-follow">
+<li class="actions-item">
+    <button class="btn-link action-button action-follow" role="checkbox" aria-checked="false">
+        <span class="sr">{% trans "Follow" %}</span>
+        <span class="action-label" aria-hidden="true">
+            <span class="label-unchecked">{% trans "Follow" %}</span>
+            <span class="label-checked">{% trans "Unfollow" %}</span>
+        </span>
+        <span class="action-icon"><span class="icon fa fa-star" aria-hidden="true"></span></span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-vote">
+<li class="actions-item">
+    <span aria-hidden="true" class="display-vote is-hidden" >
+      <span class="vote-count"></span>
+    </span>
+    <button class="btn-link action-button action-vote" role="checkbox" aria-checked="false">
+        <span class="sr">{% trans "Vote for this post," %}&nbsp;</span>
+        <span class="sr js-sr-vote-count"></span>
+
+        <span class="action-label" aria-hidden="true">
+          <span class="vote-count"></span>
+        </span>
+
+        <span class="action-icon" aria-hidden="true">
+            <span class="icon fa fa-plus" aria-hidden="true"></span>
+        </span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-report">
+<li class="actions-item">
+    <button class="btn-link action-list-item action-report" role="checkbox" aria-checked="false">
+        <span class="sr">{% trans "Report abuse" %}</span>
+        <span class="action-label" aria-hidden="true">
+            <span class="label-unchecked">{% trans "Report" %}</span>
+            <span class="label-checked">{% trans "Unreport" %}</span>
+        </span>
+        <span class="action-icon">
+          <span class="icon fa fa-flag" aria-hidden="true"></span>
+        </span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-pin">
+<li class="actions-item">
+    <button class="btn-link action-list-item action-pin" role="checkbox" aria-checked="false">
+        <span class="sr">{% trans "Pin" %}</span>
+        <span class="action-label" aria-hidden="true">
+            <span class="label-unchecked">{% trans "Pin" %}</span>
+            <span class="label-checked">{% trans "Unpin" %}</span>
+        </span>
+        <span class="action-icon">
+          <span class="icon fa fa-thumb-tack" aria-hidden="true"></span>
+        </span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-close">
+<li class="actions-item">
+    <button class="btn-link action-list-item action-close" role="checkbox" aria-checked="false">
+        <span class="sr">{% trans "Close" %}</span>
+        <span class="action-label" aria-hidden="true">
+            <span class="label-unchecked">{% trans "Close" %}</span>
+            <span class="label-checked">{% trans "Open" %}</span>
+        </span>
+        <span class="action-icon">
+          <span class="icon fa fa-lock" aria-hidden="true"></span>
+        </span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-edit">
+<li class="actions-item">
+    <button class="btn-link action-list-item action-edit">
+        <span class="action-label">{% trans "Edit" %}</span>
+        <span class="action-icon"><span class="icon fa fa-pencil" aria-hidden="true"></span></span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-action-delete">
+<li class="actions-item">
+    <button class="btn-link action-list-item action-delete">
+        <span class="action-label">{% trans "Delete" %}</span>
+        <span class="action-icon"><span class="icon fa fa-remove" aria-hidden="true"></span></span>
+    </button>
+</li>
+</script>
+<script aria-hidden="true" type="text/template" id="forum-actions">
+{% if not readOnly %}
+    <ul class="{{ contentType }}-actions-list">
+        {% for action in primaryActions %}
+            {% include 'forum-action-'|add:action %}
+        {% endfor %}
+        <li class="actions-item is-visible">
+            <div class="more-wrapper">
+                <button class="btn-link action-button action-more" aria-label="{% trans 'More' %}" aria-haspopup="true" aria-controls="action-menu-{{ contentType }}-{{ contentId }}">
+                    <span class="action-label">{% trans 'More' %}</span>
+                    <span class="action-icon"><span class="icon fa fa-ellipsis-h" aria-hidden="true"></span></span>
+                </button>
+                <div class="actions-dropdown" id="action-menu-{{ contentType }}-{{ contentId }}" aria-expanded="false">
+                  <ul class="actions-dropdown-list">
+                    {% for action in secondaryActions %}
+                        {% include 'forum-action-'|add:action %}
+                    {% endfor %}
+                  </ul>
+                </div>
+            </div>
+        </li>
+    </ul>
+{% endif %}
+</script>
+<script aria-hidden="true" type="text/template" id="alert-popup">
+<div class='modal' role='alertdialog' id='discussion-alert' aria-describedby='discussion-alert-message'>
+    <div class='inner-wrapper discussion-alert-wrapper'>
+        <button class='btn close-modal dismiss' title='{% trans "Close" %}'>
+            <span class='icon fa fa-times' aria-hidden='true'></span>
+        </button>
+        <header>
+            <h2></h2>
+            <hr/>
+        </header>
+        <p id='discussion-alert-message'></p>
+        <hr/>
+        <button class='btn dismiss'>{% trans "OK" %}</button>
+    </div>
+</div>
+</script>
+<script aria-hidden="true" type="text/template" id="nav-load-more-link">
+<li class='forum-nav-load-more'>
+    <button class='btn-link forum-nav-load-more-link'>
+        {% trans "Load more" %}
+    </button>
+</li>
+</script>
