@@ -8,9 +8,9 @@ appdirs==1.4.4
     # via fs
 asgiref==3.8.1
     # via django
-boto3==1.35.68
+boto3==1.35.71
     # via fs-s3fs
-botocore==1.35.68
+botocore==1.35.71
     # via
     #   boto3
     #   s3transfer
@@ -23,7 +23,7 @@ django==4.2.16
     #   openedx-django-pyfs
 django-appconf==1.0.6
     # via django-statici18n
-django-statici18n==2.5.0
+django-statici18n==2.6.0
     # via -r requirements/base.in
 edx-i18n-tools==1.6.3
     # via -r requirements/base.in
