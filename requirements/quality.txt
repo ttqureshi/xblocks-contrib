@@ -24,11 +24,11 @@ binaryornot==0.4.4
     # via
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.35.76
+boto3==1.35.81
     # via
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.35.76
+botocore==1.35.81
     # via
     #   -r requirements/test.txt
     #   boto3
@@ -37,7 +37,7 @@ cachetools==5.5.0
     # via
     #   -r requirements/test.txt
     #   tox
-certifi==2024.8.30
+certifi==2024.12.14
     # via
     #   -r requirements/test.txt
     #   requests
@@ -59,7 +59,7 @@ click==8.1.7
     #   edx-lint
 click-log==0.4.0
     # via edx-lint
-code-annotations==2.0.0
+code-annotations==2.1.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -288,7 +288,7 @@ six==1.17.0
     #   python-dateutil
 snowballstemmer==2.2.0
     # via pydocstyle
-sqlparse==0.5.2
+sqlparse==0.5.3
     # via
     #   -r requirements/test.txt
     #   django
