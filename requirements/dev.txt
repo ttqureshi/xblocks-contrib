@@ -19,7 +19,7 @@ asgiref==3.8.1
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   django
-astroid==3.3.6
+astroid==3.3.7
     # via
     #   -r requirements/quality.txt
     #   pylint
@@ -29,12 +29,12 @@ binaryornot==0.4.4
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.35.81
+boto3==1.35.86
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.35.81
+botocore==1.35.86
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -66,7 +66,7 @@ charset-normalizer==3.4.0
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   requests
-click==8.1.7
+click==8.1.8
     # via
     #   -r requirements/pip-tools.txt
     #   -r requirements/quality.txt
@@ -170,7 +170,7 @@ isort==5.13.2
     # via
     #   -r requirements/quality.txt
     #   pylint
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -413,7 +413,7 @@ types-python-dateutil==2.9.0.20241206
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   arrow
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
