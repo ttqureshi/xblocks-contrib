@@ -19,7 +19,7 @@ asgiref==3.8.1
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   django
-astroid==3.3.7
+astroid==3.3.8
     # via
     #   -r requirements/quality.txt
     #   pylint
@@ -29,12 +29,12 @@ binaryornot==0.4.4
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.35.86
+boto3==1.35.90
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.35.86
+botocore==1.35.90
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -61,7 +61,7 @@ chardet==5.2.0
     #   binaryornot
     #   diff-cover
     #   tox
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -95,7 +95,7 @@ cookiecutter==2.6.0
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   xblock-sdk
-coverage[toml]==7.6.9
+coverage[toml]==7.6.10
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -276,7 +276,7 @@ pygments==2.18.0
     #   -r requirements/test.txt
     #   diff-cover
     #   rich
-pylint==3.3.2
+pylint==3.3.3
     # via
     #   -r requirements/quality.txt
     #   edx-lint

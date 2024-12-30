@@ -32,11 +32,11 @@ binaryornot==0.4.4
     # via
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.35.86
+boto3==1.35.90
     # via
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.35.86
+botocore==1.35.90
     # via
     #   -r requirements/test.txt
     #   boto3
@@ -58,7 +58,7 @@ chardet==5.2.0
     #   -r requirements/test.txt
     #   binaryornot
     #   tox
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via
     #   -r requirements/test.txt
     #   requests
@@ -77,7 +77,7 @@ cookiecutter==2.6.0
     # via
     #   -r requirements/test.txt
     #   xblock-sdk
-coverage[toml]==7.6.9
+coverage[toml]==7.6.10
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -162,7 +162,7 @@ jmespath==1.0.1
     #   -r requirements/test.txt
     #   boto3
     #   botocore
-keyring==25.5.0
+keyring==25.6.0
     # via twine
 lxml[html-clean]==5.3.0
     # via
