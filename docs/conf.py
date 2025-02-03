@@ -17,6 +17,19 @@ import sys
 from datetime import datetime
 from subprocess import check_call
 
+import django
+from django.conf import settings
+
+settings.configure(
+    USE_I18N=True,
+    USE_L10N=True,
+    USE_TZ=True,
+    LANGUAGE_CODE="en-us",
+    LANGUAGES=[("en", "English")],
+)
+
+django.setup()
+
 
 def get_version(*file_paths):
     """

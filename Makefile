@@ -45,9 +45,19 @@ dev.clean:
 	-docker rmi $(REPO_NAME)-dev
 
 dev.build:
-	docker build -t $(REPO_NAME)-dev $(CURDIR)
+	docker build --no-cache -t $(REPO_NAME)-dev $(CURDIR)
 
-dev.run: dev.clean dev.build ## Clean, build and run test image
+check-log:
+	@if [ ! -d "$(CURDIR)/var" ]; then \
+		echo "Creating var directory"; \
+		mkdir -p $(CURDIR)/var; \
+	fi
+	@if [ ! -f "$(CURDIR)/var/workbench.log" ]; then \
+		echo "Creating empty workbench.log"; \
+		touch $(CURDIR)/var/workbench.log; \
+	fi
+
+dev.run: dev.clean dev.build check-log
 	docker run -p 8000:8000 -v $(CURDIR):/usr/local/src/$(REPO_NAME) --name $(REPO_NAME)-dev $(REPO_NAME)-dev
 
 # XBlock directories
@@ -83,11 +93,17 @@ build_dummy_translations: dummy_translations compile_translations ## generate an
 
 validate_translations: build_dummy_translations detect_changed_source_translations ## validate translations
 
-pull_translations: ## pull translations from transifex
-	cd $(PACKAGE_NAME) && i18n_tool transifex pull
+pull_translations: ## pull translations from Transifex for each XBlock
+	@for xblock in $(XBLOCKS); do \
+		echo "Pulling translations for $$xblock..."; \
+		cd $$xblock && i18n_tool transifex pull; \
+	done
 
-push_translations: extract_translations ## push translations to transifex
-	cd $(PACKAGE_NAME) && i18n_tool transifex push
+push_translations: extract_translations ## push translations to Transifex for each XBlock
+	@for xblock in $(XBLOCKS); do \
+		echo "Pushing translations for $$xblock..."; \
+		cd $$xblock && i18n_tool transifex push; \
+	done
 
 install_transifex_client: ## Install the Transifex client
 	# Instaling client will skip CHANGELOG and LICENSE files from git changes
