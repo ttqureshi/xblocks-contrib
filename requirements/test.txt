@@ -16,18 +16,18 @@ asgiref==3.8.1
     #   django
 binaryornot==0.4.4
     # via cookiecutter
-boto3==1.36.6
+boto3==1.36.11
     # via
     #   -r requirements/base.txt
     #   fs-s3fs
-botocore==1.36.6
+botocore==1.36.11
     # via
     #   -r requirements/base.txt
     #   boto3
     #   s3transfer
 cachetools==5.5.1
     # via tox
-certifi==2024.12.14
+certifi==2025.1.31
     # via requests
 chardet==5.2.0
     # via
@@ -167,7 +167,7 @@ python-slugify==8.0.4
     # via
     #   code-annotations
     #   cookiecutter
-pytz==2024.2
+pytz==2025.1
     # via
     #   -r requirements/base.txt
     #   xblock
