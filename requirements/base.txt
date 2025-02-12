@@ -8,9 +8,9 @@ appdirs==1.4.4
     # via fs
 asgiref==3.8.1
     # via django
-boto3==1.35.68
+boto3==1.36.18
     # via fs-s3fs
-botocore==1.35.68
+botocore==1.36.18
     # via
     #   boto3
     #   s3transfer
@@ -43,6 +43,7 @@ jmespath==1.0.1
     #   boto3
     #   botocore
 lxml[html-clean,html_clean]==5.3.1
+lxml[html-clean,html_clean]==5.3.1
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
@@ -55,7 +56,7 @@ markupsafe==3.0.2
     # via
     #   mako
     #   xblock
-nh3==0.2.18
+nh3==0.2.20
     # via -r requirements/base.in
 oauthlib==3.2.2
     # via -r requirements/base.in
@@ -63,11 +64,11 @@ openedx-django-pyfs==3.7.0
     # via -r requirements/base.in
 path==16.16.0
     # via edx-i18n-tools
-pbr==6.1.0
+pbr==6.1.1
     # via stevedore
 polib==1.2.0
     # via edx-i18n-tools
-pymongo==4.10.1
+pymongo==4.11.1
     # via edx-opaque-keys
 python-dateutil==2.9.0.post0
     # via

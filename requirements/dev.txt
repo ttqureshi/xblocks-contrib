@@ -29,12 +29,12 @@ binaryornot==0.4.4
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.35.68
+boto3==1.36.18
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.35.68
+botocore==1.36.18
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -95,7 +95,7 @@ cookiecutter==2.6.0
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   xblock-sdk
-coverage[toml]==7.6.8
+coverage[toml]==7.6.12
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -137,6 +137,10 @@ edx-i18n-tools==1.6.3
     #   -r requirements/test.txt
 edx-lint==5.6.0
     # via -r requirements/quality.txt
+edx-opaque-keys==2.11.0
+    # via
+    #   -r requirements/quality.txt
+    #   -r requirements/test.txt
 filelock==3.17.0
     # via
     #   -r requirements/quality.txt
@@ -222,7 +226,7 @@ mdurl==0.1.2
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   markdown-it-py
-nh3==0.2.18
+nh3==0.2.20
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -304,7 +308,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/quality.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.10.1
+pymongo==4.11.1
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
