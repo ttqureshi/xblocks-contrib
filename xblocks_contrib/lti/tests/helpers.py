@@ -136,7 +136,6 @@ class MockRuntime(Runtime):
 
 
 def get_test_system(
-    course_id=CourseKey.from_string("/".join(["org", "course", "run"])),
     user=None,
     user_is_staff=False,
 ):
