@@ -60,7 +60,7 @@ class LTIBlockTest(TestCase):
                 </imsx_POXEnvelopeRequest>
             """)
         self.course_id = CourseKey.from_string('org/course/run')
-        self.runtime = get_test_system(self.course_id)
+        self.runtime = get_test_system()
         self.runtime.publish = Mock()
         self.runtime._services['rebind_user'] = Mock()  # pylint: disable=protected-access
 
