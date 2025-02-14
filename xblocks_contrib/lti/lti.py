@@ -371,10 +371,22 @@ class LTIBlock(
     )
 
     editable_fields = (
-        "accept_grades_past_due", "button_text", "custom_parameters", "display_name",
-        "hide_launch", "description", "lti_id", "launch_url", "open_in_a_new_page",
-        "ask_to_send_email", "ask_to_send_username", "has_score", "weight",
+        "accept_grades_past_due", "ask_to_send_email", "ask_to_send_username", "button_text",
+        "custom_parameters", "description", "display_name", "has_score", "hide_launch", 
+        "launch_url", "lti_id", "open_in_a_new_page", "weight",
     )
+
+    @property
+    def location(self):
+        return self.scope_ids.usage_id
+
+    @location.setter
+    def location(self, value):
+        assert isinstance(value, UsageKey)
+        self.scope_ids = self.scope_ids._replace(
+            def_id=value,  # Note: assigning a UsageKey as def_id is OK in old mongo / import system but wrong in split
+            usage_id=value,
+        )
 
     def max_score(self):
         return self.weight if self.has_score else None
@@ -490,7 +502,7 @@ class LTIBlock(
 
             # These parameters do not participate in OAuth signing.
             'launch_url': self.launch_url.strip(),
-            'element_id': self.scope_ids.usage_id.html_id(),
+            'element_id': self.location.html_id(),
             'element_class': self.scope_ids.block_type,
             'open_in_a_new_page': self.open_in_a_new_page,
             'display_name': self.display_name,
@@ -723,7 +735,7 @@ class LTIBlock(
         i4x-2-3-lti-31de800015cf4afb973356dbe81496df this part of resource_link_id:
         makes resource_link_id to be unique among courses inside same system.
         """
-        return str(parse.quote(f"{settings.LMS_BASE}-{self.scope_ids.usage_id.html_id()}"))
+        return str(parse.quote(f"{settings.LMS_BASE}-{self.location.html_id()}"))
 
     def get_lis_result_sourcedid(self):
         """
@@ -744,7 +756,7 @@ class LTIBlock(
         """
         Return course by course id.
         """
-        return self.runtime.modulestore.get_course(self.scope_ids.usage_id.course_key)
+        return self.runtime.modulestore.get_course(self.location.course_key)
 
     @property
     def context_id(self):
@@ -754,7 +766,7 @@ class LTIBlock(
         context_id is an opaque identifier that uniquely identifies the context (e.g., a course)
         that contains the link being launched.
         """
-        return str(self.scope_ids.usage_id.course_key)
+        return str(self.location.course_key)
 
     @property
     def role(self):
@@ -851,8 +863,8 @@ class LTIBlock(
             # Stubbing headers for now:
             log.info(
                 "LTI block %s in course %s does not have oauth parameters correctly configured.",
-                self.scope_ids.usage_id,
-                self.scope_ids.usage_id.course_key,
+                self.location,
+                self.location.course_key,
             )
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
