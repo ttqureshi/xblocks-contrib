@@ -108,116 +108,26 @@ def noop(text):
 
 _ = noop
 
-@XBlock.needs("i18n")
-@XBlock.needs("user")
-@XBlock.needs("rebind_user")
-class LTIBlock(
-    LTI20BlockMixin,
-    StudioEditableXBlockMixin,
-    XBlock,
-): # pylint: disable=abstract-method
+class LTIFields:
     """
-    THIS MODULE IS DEPRECATED IN FAVOR OF https://github.com/openedx/xblock-lti-consumer
+    Fields to define and obtain LTI tool from provider are set here,
+    except credentials, which should be set in course settings::
 
-    Module provides LTI integration to course.
+    `lti_id` is id to connect tool with credentials in course settings. It should not contain :: (double semicolon)
+    `launch_url` is launch URL of tool.
+    `custom_parameters` are additional parameters to navigate to proper book and book page.
 
-    Except usual Xmodule structure it proceeds with OAuth signing.
-    How it works::
+    For example, for Vitalsource provider, `launch_url` should be
+    *https://bc-staging.vitalsource.com/books/book*,
+    and to get to proper book and book page, you should set custom parameters as::
 
-    1. Get credentials from course settings.
+        vbid=put_book_id_here
+        book_location=page/put_page_number_here
 
-    2.  There is minimal set of parameters need to be signed (presented for Vitalsource)::
+    Default non-empty URL for `launch_url` is needed due to oauthlib demand (URL scheme should be presented)::
 
-            user_id
-            oauth_callback
-            lis_outcome_service_url
-            lis_result_sourcedid
-            launch_presentation_return_url
-            lti_message_type
-            lti_version
-            roles
-            *+ all custom parameters*
-
-        These parameters should be encoded and signed by *OAuth1* together with
-        `launch_url` and *POST* request type.
-
-    3. Signing proceeds with client key/secret pair obtained from course settings.
-        That pair should be obtained from LTI provider and set into course settings by course author.
-        After that signature and other OAuth data are generated.
-
-        OAuth data which is generated after signing is usual::
-
-            oauth_callback
-            oauth_nonce
-            oauth_consumer_key
-            oauth_signature_method
-            oauth_timestamp
-            oauth_version
-
-
-    4. All that data is passed to form and sent to LTI provider server by browser via
-        autosubmit via JavaScript.
-
-        Form example::
-
-            <form
-                action="${launch_url}"
-                name="ltiLaunchForm-${element_id}"
-                class="ltiLaunchForm"
-                method="post"
-                target="ltiLaunchFrame-${element_id}"
-                encType="application/x-www-form-urlencoded"
-            >
-                <input name="launch_presentation_return_url" value="" />
-                <input name="lis_outcome_service_url" value="" />
-                <input name="lis_result_sourcedid" value="" />
-                <input name="lti_message_type" value="basic-lti-launch-request" />
-                <input name="lti_version" value="LTI-1p0" />
-                <input name="oauth_callback" value="about:blank" />
-                <input name="oauth_consumer_key" value="${oauth_consumer_key}" />
-                <input name="oauth_nonce" value="${oauth_nonce}" />
-                <input name="oauth_signature_method" value="HMAC-SHA1" />
-                <input name="oauth_timestamp" value="${oauth_timestamp}" />
-                <input name="oauth_version" value="1.0" />
-                <input name="user_id" value="${user_id}" />
-                <input name="role" value="student" />
-                <input name="oauth_signature" value="${oauth_signature}" />
-
-                <input name="custom_1" value="${custom_param_1_value}" />
-                <input name="custom_2" value="${custom_param_2_value}" />
-                <input name="custom_..." value="${custom_param_..._value}" />
-
-                <input type="submit" value="Press to Launch" />
-            </form>
-
-    5. LTI provider has same secret key and it signs data string via *OAuth1* and compares signatures.
-
-        If signatures are correct, LTI provider redirects iframe source to LTI tool web page,
-        and LTI tool is rendered to iframe inside course.
-
-        Otherwise error message from LTI provider is generated.
+    https://github.com/idan/oauthlib/blob/master/oauthlib/oauth1/rfc5849/signature.py#L136
     """
-
-    # Indicates that this XBlock has been extracted from edx-platform.
-    is_extracted = True
-
-    ######################################
-    #             LTI FIELDS             #
-    ######################################
-    # `lti_id` is id to connect tool with credentials in course settings. It should not contain :: (double semicolon)
-    # `launch_url` is launch URL of tool.
-    # `custom_parameters` are additional parameters to navigate to proper book and book page.
-
-    # For example, for Vitalsource provider, `launch_url` should be
-    # *https://bc-staging.vitalsource.com/books/book*,
-    # and to get to proper book and book page, you should set custom parameters as::
-
-    #     vbid=put_book_id_here
-    #     book_location=page/put_page_number_here
-
-    # Default non-empty URL for `launch_url` is needed due to oauthlib demand (URL scheme should be presented)::
-
-    # https://github.com/idan/oauthlib/blob/master/oauthlib/oauth1/rfc5849/signature.py#L136
     display_name = String(
         display_name=_("Display Name"),
         help=_(
@@ -256,7 +166,8 @@ class LTIBlock(
             anchor_close=markupsafe.Markup("</a>")
         ),
         default='http://www.example.com',
-        scope=Scope.settings)
+        scope=Scope.settings
+    )
 
     custom_parameters = List(
         display_name=_("Custom Parameters"),
@@ -269,7 +180,8 @@ class LTIBlock(
             docs_anchor_open=markupsafe.Markup(DOCS_ANCHOR_TAG_OPEN),
             anchor_close=markupsafe.Markup("</a>")
         ),
-        scope=Scope.settings)
+        scope=Scope.settings
+    )
 
     open_in_a_new_page = Boolean(
         display_name=_("Open in New Page"),
@@ -375,6 +287,101 @@ class LTIBlock(
         "custom_parameters", "description", "display_name", "has_score", "hide_launch", 
         "launch_url", "lti_id", "open_in_a_new_page", "weight",
     )
+
+
+@XBlock.needs("i18n")
+@XBlock.needs("user")
+@XBlock.needs("rebind_user")
+class LTIBlock(
+    LTIFields,
+    LTI20BlockMixin,
+    StudioEditableXBlockMixin,
+    XBlock,
+): # pylint: disable=abstract-method
+    """
+    THIS MODULE IS DEPRECATED IN FAVOR OF https://github.com/openedx/xblock-lti-consumer
+
+    Module provides LTI integration to course.
+
+    Except usual Xmodule structure it proceeds with OAuth signing.
+    How it works::
+
+    1. Get credentials from course settings.
+
+    2.  There is minimal set of parameters need to be signed (presented for Vitalsource)::
+
+            user_id
+            oauth_callback
+            lis_outcome_service_url
+            lis_result_sourcedid
+            launch_presentation_return_url
+            lti_message_type
+            lti_version
+            roles
+            *+ all custom parameters*
+
+        These parameters should be encoded and signed by *OAuth1* together with
+        `launch_url` and *POST* request type.
+
+    3. Signing proceeds with client key/secret pair obtained from course settings.
+        That pair should be obtained from LTI provider and set into course settings by course author.
+        After that signature and other OAuth data are generated.
+
+        OAuth data which is generated after signing is usual::
+
+            oauth_callback
+            oauth_nonce
+            oauth_consumer_key
+            oauth_signature_method
+            oauth_timestamp
+            oauth_version
+
+
+    4. All that data is passed to form and sent to LTI provider server by browser via
+        autosubmit via JavaScript.
+
+        Form example::
+
+            <form
+                action="${launch_url}"
+                name="ltiLaunchForm-${element_id}"
+                class="ltiLaunchForm"
+                method="post"
+                target="ltiLaunchFrame-${element_id}"
+                encType="application/x-www-form-urlencoded"
+            >
+                <input name="launch_presentation_return_url" value="" />
+                <input name="lis_outcome_service_url" value="" />
+                <input name="lis_result_sourcedid" value="" />
+                <input name="lti_message_type" value="basic-lti-launch-request" />
+                <input name="lti_version" value="LTI-1p0" />
+                <input name="oauth_callback" value="about:blank" />
+                <input name="oauth_consumer_key" value="${oauth_consumer_key}" />
+                <input name="oauth_nonce" value="${oauth_nonce}" />
+                <input name="oauth_signature_method" value="HMAC-SHA1" />
+                <input name="oauth_timestamp" value="${oauth_timestamp}" />
+                <input name="oauth_version" value="1.0" />
+                <input name="user_id" value="${user_id}" />
+                <input name="role" value="student" />
+                <input name="oauth_signature" value="${oauth_signature}" />
+
+                <input name="custom_1" value="${custom_param_1_value}" />
+                <input name="custom_2" value="${custom_param_2_value}" />
+                <input name="custom_..." value="${custom_param_..._value}" />
+
+                <input type="submit" value="Press to Launch" />
+            </form>
+
+    5. LTI provider has same secret key and it signs data string via *OAuth1* and compares signatures.
+
+        If signatures are correct, LTI provider redirects iframe source to LTI tool web page,
+        and LTI tool is rendered to iframe inside course.
+
+        Otherwise error message from LTI provider is generated.
+    """
+
+    # Indicates that this XBlock has been extracted from edx-platform.
+    is_extracted = True
 
     @property
     def location(self):
