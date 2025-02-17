@@ -8,9 +8,9 @@ appdirs==1.4.4
     # via fs
 asgiref==3.8.1
     # via django
-boto3==1.36.16
+boto3==1.36.21
     # via fs-s3fs
-botocore==1.36.16
+botocore==1.36.21
     # via
     #   boto3
     #   s3transfer
@@ -21,7 +21,7 @@ django==4.2.19
     #   django-statici18n
     #   edx-i18n-tools
     #   openedx-django-pyfs
-django-appconf==1.0.6
+django-appconf==1.1.0
     # via django-statici18n
 django-statici18n==2.6.0
     # via -r requirements/base.in
@@ -38,7 +38,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-lxml[html-clean,html_clean]==5.3.0
+lxml[html-clean,html_clean]==5.3.1
     # via
     #   edx-i18n-tools
     #   lxml-html-clean
@@ -69,7 +69,7 @@ pyyaml==6.0.2
     #   xblock
 s3transfer==0.11.2
     # via boto3
-simplejson==3.19.3
+simplejson==3.20.1
     # via xblock
 six==1.17.0
     # via
