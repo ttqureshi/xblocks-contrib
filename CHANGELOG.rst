@@ -23,3 +23,11 @@ Added
 =====
 
 * First release on PyPI.
+
+0.2.0 – 2025-02-12
+**********************************************
+
+Added
+=====
+
+* Implemented the Word Cloud Block, extracted from edx-platform.

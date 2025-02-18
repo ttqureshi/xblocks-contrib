@@ -20,7 +20,12 @@ class TestWordCloudBlock(TestCase):
         as_dict = frag.to_dict()
         content = as_dict["content"]
         self.assertIn(
-            "WordCloudBlock: count is now",
+            "Word cloud",
+            content,
+            "XBlock did not render correct student view",
+        )
+        self.assertIn(
+            "Your words were:",
             content,
             "XBlock did not render correct student view",
         )

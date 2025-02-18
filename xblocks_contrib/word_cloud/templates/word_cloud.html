@@ -1,7 +1,50 @@
 {% load i18n %}
 
-<div class="word_cloud">
-<p>
-    WordCloudBlock: {% trans "count is now" %} <span class='count'>{{ count }}</span> {% trans "click me to increment." %}
-</p>
+<div
+    id="word_cloud_{{ element_id }}"
+    class="{{ element_class }}"
+    data-package-name="xblocks-contrib">
+    {% if display_name %}
+        <h3 class="hd hd-3" id="word_cloud_{{ element_id }}_heading">{{ display_name }}</h3>
+    {% endif %}
+
+    {% if instructions is not None %}
+        <div class="input_cloud_section" role="group" aria-labelledby="word_cloud_{{ element_id }}_instructions">
+    {% elif display_name %}
+        <div class="input_cloud_section" role="group" aria-labelledby="word_cloud_{{ element_id }}_heading">
+    {% else %}
+        <div class="input_cloud_section" role="group">
+    {% endif %}
+
+            {% if instructions is not None %}
+                <div class="input_cloud_instructions" id="word_cloud_{{ element_id }}_instructions">
+                    {{ instructions }}
+                </div>
+            {% endif %}
+
+            {% for row in range_num_inputs %}
+                <label>
+                    <span class="sr">
+                        {% blocktrans with num=row|add:1 %}
+                            {{ num }} of {{ num_inputs }}
+                        {% endblocktrans %}
+                    </span>
+                    <input class="input-cloud" type="text" size="40"
+                        {% if submitted %}style="display: none;"{% endif %}
+                    />
+                </label>
+            {% endfor %}
+
+            <div class="action">
+                <button class="save" type="button">{% trans 'Save' %}</button>
+            </div>
+        </div>
+
+    <div id="result_cloud_section_{{ element_id }}" class="result_cloud_section">
+        <div class="word_cloud"></div>
+        <p class="total_num_words"></p>
+        <p>{% trans 'Your words were:' %}</p>
+        <ul class="your_words"></ul>
+    </div>
+
 </div>
