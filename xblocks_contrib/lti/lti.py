@@ -76,7 +76,7 @@ from pytz import UTC
 from webob import Response
 from web_fragments.fragment import Fragment
 from xblock.core import List, Scope, String, XBlock
-from xblock.fields import Boolean, Float
+from xblock.fields import Boolean, Float, UserScope
 try:
     from xblock.utils.resources import ResourceLoader
     from xblock.utils.studio_editable import StudioEditableXBlockMixin
@@ -1017,3 +1017,41 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
         else:
             close_date = due_date
         return close_date is not None and datetime.datetime.now(UTC) > close_date
+
+    def bind_for_student(self, user_id, wrappers=None):
+        """
+        Bind the XBlock to a specific student by user_id.
+
+        Arguments:
+            user_id: The user_id to set in scope_ids.
+            wrappers: A list of functions to wrap the field data, if any.
+        """
+        # If we're already bound to this user, skip re-binding
+        if self.scope_ids.user_id is not None and user_id == self.scope_ids.user_id:
+            return
+        
+        # Update scope_ids to the new user
+        self.scope_ids = self.scope_ids._replace(user_id=user_id)
+
+        # Clear cached child data
+        self.clear_child_cache()
+
+        # Clear cached field data
+        for field in self.fields.values():
+            if hasattr(field.scope, 'user') and field.scope.user == UserScope.ONE:
+                field._del_cached_value(self)
+                if field in self._dirty_fields:
+                    del self._dirty_fields[field]
+
+        # Apply wrappers if provided
+        if wrappers:
+            wrapped_field_data = self.runtime.service(self, 'field-data-unbound')
+            for wrapper in wrappers:
+                wrapped_field_data = wrapper(wrapped_field_data)
+            self._bound_field_data = wrapped_field_data
+
+            if getattr(self.runtime, "uses_deprecated_field_data", False):
+                self._field_data = wrapped_field_data
+
+        # Optionally save the state if needed
+        self.save()
