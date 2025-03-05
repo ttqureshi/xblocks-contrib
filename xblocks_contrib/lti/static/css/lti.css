@@ -14,44 +14,44 @@ div.problem-progress {
     font-size: 1em;
 }
 
-div._lti_extracted {
+div.lti {
     margin: 0 auto;
 }
 
-div._lti_extracted .wrapper-lti-link {
+div.lti .wrapper-lti-link {
     font-size: 14px;
     background-color: #f6f6f6;
     padding: 20px;
 }
 
-div._lti_extracted .wrapper-lti-link .lti-link {
+div.lti .wrapper-lti-link .lti-link {
     margin-bottom: 0;
     text-align: right;
 }
 
-div._lti_extracted .wrapper-lti-link .lti-link .link_lti_new_window {
+div.lti .wrapper-lti-link .lti-link .link_lti_new_window {
     font-size: 13px;
     line-height: 20.72px;
 }
 
-div._lti_extracted form.ltiLaunchForm {
+div.lti form.ltiLaunchForm {
     display: none;
 }
 
-div._lti_extracted iframe.ltiLaunchFrame {
+div.lti iframe.ltiLaunchFrame {
     width: 100%;
     height: 800px;
     display: block;
     border: 0px;
 }
 
-div._lti_extracted h4.problem-feedback-label {
+div.lti h4.problem-feedback-label {
     font-weight: 100;
     font-size: 1em;
     font-family: "Source Sans", "Open Sans", Verdana, Geneva, sans-serif, sans-serif;
 }
 
-div._lti_extracted div.problem-feedback {
+div.lti div.problem-feedback {
     margin-top: 5px;
     margin-bottom: 5px;
 }

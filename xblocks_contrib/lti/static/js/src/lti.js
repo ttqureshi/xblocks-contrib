@@ -3,7 +3,7 @@
 function LTIBlock(runtime, element) {
     'use strict';
 
-    const $lti = $(element).find('._lti_extracted');
+    const $lti = $(element).find('.lti');
     const askToSendUsername = $lti.data('ask-to-send-username') === 'True';
     const askToSendEmail = $lti.data('ask-to-send-email') === 'True';
 
