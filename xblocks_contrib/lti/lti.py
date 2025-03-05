@@ -58,6 +58,7 @@ from importlib.resources import files
 import base64
 import datetime
 import hashlib
+import json
 import logging
 import markupsafe
 import textwrap
@@ -77,6 +78,8 @@ from webob import Response
 from web_fragments.fragment import Fragment
 from xblock.core import List, Scope, String, XBlock
 from xblock.fields import Boolean, Float, UserScope
+from xblock.runtime import KvsFieldData
+
 try:
     from xblock.utils.resources import ResourceLoader
     from xblock.utils.studio_editable import StudioEditableXBlockMixin
@@ -85,6 +88,7 @@ except ModuleNotFoundError:
     from xblockutils.studio_editable import StudioEditableXBlockMixin
 
 from .lti_2_util import LTI20BlockMixin, LTIError
+from .xml_mixin import InheritanceKeyValueStore, XmlMixin, is_pointer_tag
 
 # The anonymous user ID for the user in the course.
 ATTR_KEY_ANONYMOUS_USER_ID = 'edx-platform.anonymous_user_id'
@@ -296,6 +300,7 @@ class LTIBlock(
     LTIFields,
     LTI20BlockMixin,
     StudioEditableXBlockMixin,
+    XmlMixin,
     XBlock,
 ): # pylint: disable=abstract-method
     """
@@ -1055,3 +1060,78 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
 
         # Optionally save the state if needed
         self.save()
+
+    @classmethod
+    def parse_xml(cls, node, runtime, keys):  # pylint: disable=too-many-statements
+        """
+        Use `node` to construct a new block.
+
+        Arguments:
+            node (etree.Element): The xml node to parse into an xblock.
+
+            runtime (:class:`.Runtime`): The runtime to use while parsing.
+
+            keys (:class:`.ScopeIds`): The keys identifying where this block
+                will store its data.
+
+        Returns (XBlock): The newly parsed XBlock
+
+        """
+
+        # VS[compat]
+        # In 2012, when the platform didn't have CMS, and all courses were handwritten XML files, problem tags
+        # contained XML problem descriptions withing themselves. Later, when Studio has been created, and "pointer" tags
+        # became the preferred problem format, edX has to add this compatibility code to 1) support both pre- and
+        # post-Studio course formats simulteneously, and 2) be able to migrate 2012-fall courses to Studio. Old style
+        # support supposed to be removed, but the deprecation process have never been initiated, so this
+        # compatibility must stay, probably forever.
+        if is_pointer_tag(node):
+            # new style:
+            # read the actual definition file--named using url_name.replace(':','/')
+            definition_xml, filepath = cls.load_definition_xml(node, runtime, keys.def_id)
+            aside_children = runtime.parse_asides(definition_xml, keys.def_id, keys.usage_id, runtime.id_generator)
+        else:
+            filepath = None
+            definition_xml = node
+
+        # Note: removes metadata.
+        definition, children = cls.load_definition(definition_xml, runtime, keys.def_id, runtime.id_generator)
+
+        # VS[compat]
+        # Make Ike's github preview links work in both old and new file layouts.
+        if is_pointer_tag(node):
+            # new style -- contents actually at filepath
+            definition['filename'] = [filepath, filepath]
+
+        metadata = cls.load_metadata(definition_xml)
+
+        # move definition metadata into dict
+        dmdata = definition.get('definition_metadata', '')
+        if dmdata:
+            metadata['definition_metadata_raw'] = dmdata
+            try:
+                metadata.update(json.loads(dmdata))
+            except Exception as err:  # lint-amnesty, pylint: disable=broad-except
+                log.debug('Error in loading metadata %r', dmdata, exc_info=True)
+                metadata['definition_metadata_err'] = str(err)
+
+        definition_aside_children = definition.pop('aside_children', None)
+        if definition_aside_children:
+            aside_children.extend(definition_aside_children)
+
+        # Set/override any metadata specified by policy
+        cls.apply_policy(metadata, runtime.get_policy(keys.usage_id))
+
+        field_data = {**metadata, **definition, "children": children}
+        field_data['xml_attributes']['filename'] = definition.get('filename', ['', None])  # for git link
+        if "filename" in field_data:
+            del field_data["filename"]  # filename should only be in xml_attributes.
+
+        # we shouldn't be instantiating our own field data instance here, but there are complex inter-depenencies
+        # between this mixin and ImportSystem that currently seem to require it for proper metadata inheritance.
+        kvs = InheritanceKeyValueStore(initial_values=field_data)
+        field_data = KvsFieldData(kvs)
+
+        # super().parse_xml(cls, keys, field_data)
+        xblock = runtime.construct_xblock_from_class(cls, keys, field_data)
+        return xblock
