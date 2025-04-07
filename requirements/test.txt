@@ -16,11 +16,11 @@ asgiref==3.8.1
     #   django
 binaryornot==0.4.4
     # via cookiecutter
-boto3==1.37.23
+boto3==1.37.28
     # via
     #   -r requirements/base.txt
     #   fs-s3fs
-botocore==1.37.23
+botocore==1.37.28
     # via
     #   -r requirements/base.txt
     #   boto3
@@ -93,7 +93,7 @@ jmespath==1.0.1
     #   -r requirements/base.txt
     #   boto3
     #   botocore
-lxml[html-clean]==5.3.1
+lxml[html-clean]==5.3.2
     # via
     #   -r requirements/base.txt
     #   edx-i18n-tools
@@ -153,9 +153,9 @@ pytest==8.3.5
     # via
     #   pytest-cov
     #   pytest-django
-pytest-cov==6.0.0
+pytest-cov==6.1.1
     # via -r requirements/test.in
-pytest-django==4.10.0
+pytest-django==4.11.1
     # via -r requirements/test.in
 python-dateutil==2.9.0.post0
     # via
@@ -217,9 +217,9 @@ urllib3==2.2.3
     #   -r requirements/base.txt
     #   botocore
     #   requests
-virtualenv==20.29.3
+virtualenv==20.30.0
     # via tox
-web-fragments==2.2.0
+web-fragments==3.0.0
     # via
     #   -r requirements/base.txt
     #   xblock
