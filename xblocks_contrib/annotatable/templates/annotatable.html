@@ -1,7 +1,24 @@
 {% load i18n %}
-
-<div class="annotatable">
-<p>
-    AnnotatableBlock: {% trans "count is now" %} <span class='count'>{{ count }}</span> {% trans "click me to increment." %}
-</p>
+<div class="annotatable-wrapper" id="annotatable_{{ element_id }}">
+    <div class="annotatable-header">
+        {% if display_name %}<h3 class="hd hd-3 annotatable-title">{{ display_name }}</h3>{% endif %}
+    </div>
+    {% if instructions_html %}
+        <div class="annotatable-section shaded">
+            <div class="annotatable-section-title">
+                {% trans "Instructions" %}
+                <a class="annotatable-toggle annotatable-toggle-instructions expanded"
+                   href="javascript:void(0)">{% trans "Collapse Instructions" %}</a>
+            </div>
+            <div class="annotatable-section-body annotatable-instructions">{{ instructions_html|safe }}</div>
+        </div>
+    {% endif %}
+    <div class="annotatable-section">
+        <div class="annotatable-section-title">
+            {% trans "Guided Discussion" %}
+            <a class="annotatable-toggle annotatable-toggle-annotations"
+               href="javascript:void(0)">{% trans "Hide Annotations" %}</a>
+        </div>
+        <div class="annotatable-section-body annotatable-content">{{ content_html|safe }}</div>
+    </div>
 </div>

@@ -21,6 +21,7 @@ Added
 =====
 
 * Added support for django 5.2.
+* Implemented the Annotatable XBlock, extracted from edx-platform.
 
 
 0.2.0 – 2025-02-12

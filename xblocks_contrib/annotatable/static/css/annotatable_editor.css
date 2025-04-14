@@ -1,0 +1,12 @@
+.wrapper-comp-editor {
+    display: block;
+}
+.wrapper-comp-editor.is-inactive {
+    display: none;
+}
+.wrapper-comp-editor.latex-problem {
+    margin-top: 50px;
+}
+div.wrapper-comp-editor.is-inactive ~ div.launch-latex-compiler {
+    display: none;
+}
