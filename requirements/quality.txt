@@ -16,7 +16,7 @@ asgiref==3.8.1
     # via
     #   -r requirements/test.txt
     #   django
-astroid==3.3.8
+astroid==3.3.9
     # via
     #   pylint
     #   pylint-celery
@@ -24,11 +24,11 @@ binaryornot==0.4.4
     # via
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.36.26
+boto3==1.37.35
     # via
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.36.26
+botocore==1.37.35
     # via
     #   -r requirements/test.txt
     #   boto3
@@ -59,7 +59,7 @@ click==8.1.8
     #   edx-lint
 click-log==0.4.0
     # via edx-lint
-code-annotations==2.2.0
+code-annotations==2.3.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -71,17 +71,17 @@ cookiecutter==2.6.0
     # via
     #   -r requirements/test.txt
     #   xblock-sdk
-coverage[toml]==7.6.12
+coverage[toml]==7.8.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-dill==0.3.9
+dill==0.4.0
     # via pylint
 distlib==0.3.9
     # via
     #   -r requirements/test.txt
     #   virtualenv
-django==4.2.19
+django==4.2.20
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
@@ -100,13 +100,13 @@ dnspython==2.7.0
     # via
     #   -r requirements/test.txt
     #   pymongo
-edx-i18n-tools==1.6.3
+edx-i18n-tools==1.7.0
     # via -r requirements/test.txt
 edx-lint==5.6.0
     # via -r requirements/quality.in
-edx-opaque-keys==2.11.0
+edx-opaque-keys==2.12.0
     # via -r requirements/test.txt
-filelock==3.17.0
+filelock==3.18.0
     # via
     #   -r requirements/test.txt
     #   tox
@@ -126,15 +126,15 @@ idna==3.10
     # via
     #   -r requirements/test.txt
     #   requests
-iniconfig==2.0.0
+iniconfig==2.1.0
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==6.0.0
+isort==6.0.1
     # via
     #   -r requirements/quality.in
     #   pylint
-jinja2==3.1.5
+jinja2==3.1.6
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -144,18 +144,18 @@ jmespath==1.0.1
     #   -r requirements/test.txt
     #   boto3
     #   botocore
-lxml[html-clean]==5.3.1
+lxml[html-clean]==5.3.2
     # via
     #   -r requirements/test.txt
     #   edx-i18n-tools
     #   lxml-html-clean
     #   xblock
     #   xblock-sdk
-lxml-html-clean==0.4.1
+lxml-html-clean==0.4.2
     # via
     #   -r requirements/test.txt
     #   lxml
-mako==1.3.9
+mako==1.3.10
     # via
     #   -r requirements/test.txt
     #   xblock
@@ -175,7 +175,7 @@ mdurl==0.1.2
     # via
     #   -r requirements/test.txt
     #   markdown-it-py
-nh3==0.2.20
+nh3==0.2.21
     # via -r requirements/test.txt
 oauthlib==3.2.2
     # via -r requirements/test.txt
@@ -195,7 +195,7 @@ pbr==6.1.1
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.3.6
+platformdirs==4.3.7
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -210,7 +210,7 @@ polib==1.2.0
     # via
     #   -r requirements/test.txt
     #   edx-i18n-tools
-pycodestyle==2.12.1
+pycodestyle==2.13.0
     # via -r requirements/quality.in
 pydocstyle==6.3.0
     # via -r requirements/quality.in
@@ -218,7 +218,7 @@ pygments==2.19.1
     # via
     #   -r requirements/test.txt
     #   rich
-pylint==3.3.4
+pylint==3.3.6
     # via
     #   edx-lint
     #   pylint-celery
@@ -232,7 +232,7 @@ pylint-plugin-utils==0.8.2
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==4.11.1
+pymongo==4.12.0
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
@@ -244,14 +244,14 @@ pyproject-api==1.9.0
     # via
     #   -r requirements/test.txt
     #   tox
-pytest==8.3.4
+pytest==8.3.5
     # via
     #   -r requirements/test.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==6.0.0
+pytest-cov==6.1.1
     # via -r requirements/test.txt
-pytest-django==4.10.0
+pytest-django==4.11.1
     # via -r requirements/test.txt
 python-dateutil==2.9.0.post0
     # via
@@ -264,7 +264,7 @@ python-slugify==8.0.4
     #   -r requirements/test.txt
     #   code-annotations
     #   cookiecutter
-pytz==2025.1
+pytz==2025.2
     # via
     #   -r requirements/test.txt
     #   xblock
@@ -280,11 +280,11 @@ requests==2.32.3
     #   -r requirements/test.txt
     #   cookiecutter
     #   xblock-sdk
-rich==13.9.4
+rich==14.0.0
     # via
     #   -r requirements/test.txt
     #   cookiecutter
-s3transfer==0.11.2
+s3transfer==0.11.4
     # via
     #   -r requirements/test.txt
     #   boto3
@@ -317,13 +317,13 @@ text-unidecode==1.3
     #   python-slugify
 tomlkit==0.13.2
     # via pylint
-tox==4.24.1
+tox==4.25.0
     # via -r requirements/test.txt
 types-python-dateutil==2.9.0.20241206
     # via
     #   -r requirements/test.txt
     #   arrow
-typing-extensions==4.12.2
+typing-extensions==4.13.2
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
@@ -333,11 +333,11 @@ urllib3==2.2.3
     #   -r requirements/test.txt
     #   botocore
     #   requests
-virtualenv==20.29.2
+virtualenv==20.30.0
     # via
     #   -r requirements/test.txt
     #   tox
-web-fragments==2.2.0
+web-fragments==3.0.0
     # via
     #   -r requirements/test.txt
     #   xblock
@@ -347,11 +347,11 @@ webob==1.8.9
     #   -r requirements/test.txt
     #   xblock
     #   xblock-sdk
-xblock==5.1.2
+xblock==5.2.0
     # via
     #   -r requirements/test.txt
     #   xblock-sdk
-xblock-sdk==0.12.0
+xblock-sdk==0.13.0
     # via -r requirements/test.txt
 
 # The following packages are considered to be unsafe in a requirements file:
