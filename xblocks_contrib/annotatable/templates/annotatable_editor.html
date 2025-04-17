@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="editor-with-buttons">
+  <div class="wrapper-comp-editor" id="editor-tab">
+    <section class="raw-edit">
+      <textarea name="data" class="edit-box" rows="8" cols="40">{{ data }}</textarea>
+    </section>
+  </div>
+
+  <div class="xblock-actions">
+      <ul>
+        <li class="action-item">
+          <a href="#" class="button action-primary save-button">{% trans "Save" %}</a>
+        </li>
+
+        <li class="action-item">
+          <a href="#" class="button cancel-button">{% trans "Cancel" %}</a>
+        </li>
+      </ul>
+  </div>
+</div>

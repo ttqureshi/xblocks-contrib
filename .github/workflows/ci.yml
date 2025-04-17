@@ -15,7 +15,7 @@ jobs:
       fail-fast: true
       matrix:
         python-version: ['3.11', '3.12']
-        toxenv: [quality, docs, django42, django51]
+        toxenv: [quality, docs, django42, django52]
 
     steps:
     - name: Check out code
