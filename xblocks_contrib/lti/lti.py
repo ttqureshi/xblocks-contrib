@@ -58,9 +58,9 @@ import datetime
 import hashlib
 import logging
 import textwrap
-from xml.sax.saxutils import escape
 from unittest import mock
 from urllib import parse
+from xml.sax.saxutils import escape
 
 import markupsafe
 import nh3
@@ -71,10 +71,11 @@ from lxml import etree
 from oauthlib.oauth1.rfc5849 import signature
 from opaque_keys.edx.keys import UsageKey
 from pytz import UTC
-from webob import Response
 from web_fragments.fragment import Fragment
+from webob import Response
 from xblock.core import List, Scope, String, XBlock
 from xblock.fields import Boolean, Float
+
 try:
     from xblock.utils.resources import ResourceLoader
     from xblock.utils.studio_editable import StudioEditableXBlockMixin
@@ -98,6 +99,7 @@ DOCS_ANCHOR_TAG_OPEN = (
     "href='https://edx.readthedocs.io/projects/edx-partner-course-staff/en/latest/exercises_tools/lti_component.html'>"
 )
 BREAK_TAG = '<br />'
+
 
 class LTIFields:
     """
@@ -230,7 +232,8 @@ class LTIFields:
     )
 
     # Users will be presented with a message indicating that their e-mail/username would be sent to a third
-    # party application. When "Open in New Page" is not selected, the tool automatically appears without any user action.  # lint-amnesty, pylint: disable=line-too-long
+    # party application. When "Open in New Page" is not selected, the tool automatically appears without any
+    #  user action.
     ask_to_send_username = Boolean(
         display_name=_("Request user's username"),
         # Translators: This is used to request the user's username for a third party service.
@@ -250,8 +253,8 @@ class LTIFields:
     description = String(
         display_name=_("LTI Application Information"),
         help=_(
-            "Enter a description of the third party application. If requesting username and/or email, use this text box to inform users "  # lint-amnesty, pylint: disable=line-too-long
-            "why their username and/or email will be forwarded to a third party application."
+            "Enter a description of the third party application. If requesting username and/or email, use this text"
+            " box to inform users why their username and/or email will be forwarded to a third party application."
         ),
         default="",
         scope=Scope.settings
@@ -275,7 +278,7 @@ class LTIFields:
 
     editable_fields = (
         "accept_grades_past_due", "ask_to_send_email", "ask_to_send_username", "button_text",
-        "custom_parameters", "description", "display_name", "has_score", "hide_launch", 
+        "custom_parameters", "description", "display_name", "has_score", "hide_launch",
         "launch_url", "lti_id", "open_in_a_new_page", "weight",
     )
 
@@ -834,7 +837,7 @@ class LTIBlock(
         except AttributeError:
             self.user_email = ""  # lint-amnesty, pylint: disable=attribute-defined-outside-init
         try:
-            self.user_username = real_user_object.username  # lint-amnesty, pylint: disable=attribute-defined-outside-init
+            self.user_username = real_user_object.username  # pylint: disable=attribute-defined-outside-init
         except AttributeError:
             self.user_username = ""  # lint-amnesty, pylint: disable=attribute-defined-outside-init
 
@@ -910,7 +913,9 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
         imsx_messageIdentifier = root.xpath("//def:imsx_messageIdentifier", namespaces=namespaces)[0].text or ''
         sourcedId = root.xpath("//def:sourcedId", namespaces=namespaces)[0].text
         score = root.xpath("//def:textString", namespaces=namespaces)[0].text
-        action = root.xpath("//def:imsx_POXBody", namespaces=namespaces)[0].getchildren()[0].tag.replace('{' + lti_spec_namespace + '}', '')  # lint-amnesty, pylint: disable=line-too-long
+        action = root.xpath(
+            "//def:imsx_POXBody", namespaces=namespaces
+        )[0].getchildren()[0].tag.replace('{' + lti_spec_namespace + '}', '')
         # Raise exception if score is not float or not in range 0.0-1.0 regarding spec.
         score = float(score)
         if not 0 <= score <= 1:

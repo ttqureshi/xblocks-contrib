@@ -5,12 +5,19 @@ Utility methods for unit tests.
 import datetime
 import re
 from unittest.mock import Mock
+
 from xblock.fields import JSONField
 from xblock.reference.user_service import UserService, XBlockUser
 from xblock.runtime import Runtime
 
-
-TIMEDELTA_REGEX = re.compile(r'^((?P<days>\d+?) day(?:s?))?(\s)?((?P<hours>\d+?) hour(?:s?))?(\s)?((?P<minutes>\d+?) minute(?:s)?)?(\s)?((?P<seconds>\d+?) second(?:s)?)?$')  # lint-amnesty, pylint: disable=line-too-long
+TIMEDELTA_REGEX = re.compile(
+    r'^'
+    r'((?P<days>\d+?) day(?:s?))?(\s)?'
+    r'((?P<hours>\d+?) hour(?:s?))?(\s)?'
+    r'((?P<minutes>\d+?) minute(?:s)?)?(\s)?'
+    r'((?P<seconds>\d+?) second(?:s)?)?'
+    r'$'
+)
 
 
 class Timedelta(JSONField):  # lint-amnesty, pylint: disable=missing-class-docstring
@@ -69,7 +76,7 @@ class StubUserService(UserService):
     Stub UserService for testing the sequence block.
     """
 
-    def __init__(self, # pylint: disable=too-many-positional-arguments
+    def __init__(self,  # pylint: disable=too-many-positional-arguments
                  user=None,
                  user_is_staff=False,
                  user_role=None,
@@ -112,7 +119,7 @@ class StubUserService(UserService):
         return self.user
 
 
-class MockRuntime(Runtime): #pylint: disable=abstract-method
+class MockRuntime(Runtime):  # pylint: disable=abstract-method
     """A mock implementation of the Runtime class for testing purposes."""
 
     def __init__(self, anonymous_student_id, services=None):
@@ -120,10 +127,12 @@ class MockRuntime(Runtime): #pylint: disable=abstract-method
         super().__init__(id_reader=lambda: None, id_generator=lambda: None, services=services)
         self.anonymous_student_id = anonymous_student_id
 
-    def handler_url(self, block, handler_name, suffix="", query="", thirdparty=False): #pylint: disable=too-many-positional-arguments
+    def handler_url(
+        self, block, handler_name, suffix="", query="", thirdparty=False
+    ):  # pylint: disable=too-many-positional-arguments
         return f"/mock_url/{handler_name}"
 
-    def local_resource_url(self, block, resource): #pylint: disable=arguments-renamed
+    def local_resource_url(self, block, resource):  # pylint: disable=arguments-renamed
         return f"/mock_resource_url/{resource}"
 
     def resource_url(self, resource):

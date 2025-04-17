@@ -4,13 +4,14 @@ import datetime
 import textwrap
 from unittest.mock import Mock
 
-from pytz import UTC
 from django.conf import settings
 from django.test import TestCase, override_settings
+from pytz import UTC
 from xblock.field_data import DictFieldData
 
-from xblocks_contrib.lti.lti_2_util import LTIError
 from xblocks_contrib.lti.lti import LTIBlock
+from xblocks_contrib.lti.lti_2_util import LTIError
+
 from .helpers import StubUserService, get_test_system
 
 

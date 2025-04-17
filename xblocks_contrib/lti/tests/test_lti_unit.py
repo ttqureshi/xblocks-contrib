@@ -17,9 +17,9 @@ from webob.request import Request
 from xblock.field_data import DictFieldData
 from xblock.fields import ScopeIds
 
-
-from xblocks_contrib.lti.lti_2_util import LTIError
 from xblocks_contrib.lti.lti import LTIBlock
+from xblocks_contrib.lti.lti_2_util import LTIError
+
 from .helpers import StubUserService, Timedelta, get_test_system
 
 ATTR_KEY_ANONYMOUS_USER_ID = "edx-platform.anonymous_user_id"
