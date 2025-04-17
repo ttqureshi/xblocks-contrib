@@ -82,7 +82,7 @@ class LTIBlockTest(TestCase):
         sourced_id = ":".join(
             parse.quote(i)
             for i in (self.lti_id, self.unquoted_resource_link_id, self.user_id)
-        )  # lint-amnesty, pylint: disable=line-too-long
+        )
 
         self.defaults = {
             "namespace": "http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0",
@@ -186,9 +186,7 @@ class LTIBlockTest(TestCase):
         """
         If we have no real user, we should send back failure response.
         """
-        self.runtime._services["user"] = StubUserService(
-            user=None
-        )  # pylint: disable=protected-access
+        self.runtime._services["user"] = StubUserService(user=None)  # pylint: disable=protected-access
         self.xblock.verify_oauth_body_sign = Mock()
         self.xblock.has_score = True
         request = Request(self.environ)

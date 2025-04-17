@@ -266,7 +266,7 @@ class LTI20RESTResultServiceTest(TestCase):
         assert self.xblock.score_comment == ""
         (_, evt_type, called_grade_obj), _ = (
             self.runtime.publish.call_args
-        )  # pylint: disable=unpacking-non-sequence
+        )
         assert called_grade_obj == {
             "user_id": self.USER_STANDIN.id,
             "value": None,
@@ -293,7 +293,7 @@ class LTI20RESTResultServiceTest(TestCase):
         assert self.xblock.score_comment == ""
         (_, evt_type, called_grade_obj), _ = (
             self.runtime.publish.call_args
-        )  # pylint: disable=unpacking-non-sequence
+        )
         assert called_grade_obj == {
             "user_id": self.USER_STANDIN.id,
             "value": None,
@@ -316,7 +316,7 @@ class LTI20RESTResultServiceTest(TestCase):
         assert self.xblock.score_comment == "ಠ益ಠ"
         (_, evt_type, called_grade_obj), _ = (
             self.runtime.publish.call_args
-        )  # pylint: disable=unpacking-non-sequence
+        )
         assert evt_type == "grade"
         assert called_grade_obj == {
             "user_id": self.USER_STANDIN.id,
@@ -410,9 +410,7 @@ class LTI20RESTResultServiceTest(TestCase):
         Test that we get a 404 when the supplied user does not exist
         """
         self.setup_system_xblock_mocks_for_lti20_request_test()
-        self.runtime._services["user"] = StubUserService(
-            user=None
-        )  # pylint: disable=protected-access
+        self.runtime._services["user"] = StubUserService(user=None)  # pylint: disable=protected-access
         mock_request = self.get_signed_lti20_mock_request(self.GOOD_JSON_PUT)
         response = self.xblock.lti_2_0_result_rest_handler(mock_request, "user/abcd")
         assert response.status_code == 404

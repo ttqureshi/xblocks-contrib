@@ -53,19 +53,16 @@ What is supported:
             GET / PUT / DELETE HTTP methods respectively
 """
 
-from importlib.resources import files
-
 import base64
 import datetime
 import hashlib
 import logging
-import markupsafe
 import textwrap
-import uuid
 from xml.sax.saxutils import escape
 from unittest import mock
 from urllib import parse
 
+import markupsafe
 import nh3
 import oauthlib.oauth1
 from django.conf import settings
@@ -77,7 +74,7 @@ from pytz import UTC
 from webob import Response
 from web_fragments.fragment import Fragment
 from xblock.core import List, Scope, String, XBlock
-from xblock.fields import Boolean, Float, UserScope
+from xblock.fields import Boolean, Float
 try:
     from xblock.utils.resources import ResourceLoader
     from xblock.utils.studio_editable import StudioEditableXBlockMixin
@@ -291,7 +288,7 @@ class LTIBlock(
     LTI20BlockMixin,
     StudioEditableXBlockMixin,
     XBlock,
-): # pylint: disable=abstract-method
+):
     """
     THIS MODULE IS DEPRECATED IN FAVOR OF https://github.com/openedx/xblock-lti-consumer
 
@@ -520,7 +517,7 @@ class LTIBlock(
             'accept_grades_past_due': self.accept_grades_past_due,
         }
 
-    def student_view(self, context=None):
+    def student_view(self, _context=None):
         """
         Create primary view of the LTIBlock, shown to students when viewing courses.
         """
@@ -785,7 +782,7 @@ class LTIBlock(
 
     def get_icon_class(self):
         """ Returns the icon class """
-        if self.graded and self.has_score:  # pylint: disable=no-member
+        if self.graded and self.has_score:
             return 'problem'
         return 'other'
 
@@ -886,7 +883,7 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
         # so '='' becomes '%3D'.
         # We send form via browser, so browser will encode it again,
         # So we need to decode signature back:
-        params['oauth_signature'] = parse.unquote(params['oauth_signature']).encode('utf-8').decode('utf8')  # lint-amnesty, pylint: disable=line-too-long
+        params['oauth_signature'] = parse.unquote(params['oauth_signature']).encode('utf-8').decode('utf8')
 
         # Add LTI parameters to OAuth parameters for sending in form.
         params.update(body)
@@ -963,23 +960,19 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
         )
         if oauth_body_hash != oauth_headers.get('oauth_body_hash'):
             log.error(
-                "OAuth body hash verification failed, provided: {}, "
-                "calculated: {}, for url: {}, body is: {}".format(
-                    oauth_headers.get('oauth_body_hash'),
-                    oauth_body_hash,
-                    self.get_outcome_service_url(),
-                    request.body
-                )
+                "OAuth body hash verification failed, provided: %s, calculated: %s, for url: %s, body is: %s",
+                oauth_headers.get('oauth_body_hash'),
+                oauth_body_hash,
+                self.get_outcome_service_url(),
+                request.body
             )
             raise LTIError("OAuth body hash verification is failed.")
 
         if (not signature.verify_hmac_sha1(mock_request_lti_1, client_secret) and not
                 signature.verify_hmac_sha1(mock_request_lti_2, client_secret)):
             log.error(
-                "OAuth signature verification failed, for "
-                "headers:{} url:{} method:{}".format(
-                    oauth_headers, self.get_outcome_service_url(), str(request.method)
-                )
+                "OAuth signature verification failed, for headers: %s url: %s method: %s",
+                oauth_headers, self.get_outcome_service_url(), str(request.method)
             )
             raise LTIError("OAuth signature verification has failed.")
 
@@ -1006,9 +999,9 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
         """
         Is it now past this problem's due date, including grace period?
         """
-        due_date = self.due  # pylint: disable=no-member
-        if self.graceperiod is not None and due_date:  # pylint: disable=no-member
-            close_date = due_date + self.graceperiod  # pylint: disable=no-member
+        due_date = self.due
+        if self.graceperiod is not None and due_date:
+            close_date = due_date + self.graceperiod
         else:
             close_date = due_date
         return close_date is not None and datetime.datetime.now(UTC) > close_date

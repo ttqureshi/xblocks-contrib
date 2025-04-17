@@ -125,8 +125,10 @@ class LTI20BlockMixin:
         mock_request.oauth_params.append(('oauth_signature', sig))
 
         _, headers, _ = client._render(mock_request)  # pylint: disable=protected-access
-        log.debug("\n\n#### COPY AND PASTE AUTHORIZATION HEADER ####\n{}\n####################################\n\n"
-                  .format(headers['Authorization']))
+        log.debug(
+            "\n\n#### COPY AND PASTE AUTHORIZATION HEADER ####\n%s\n####################################\n\n",
+            headers['Authorization']
+        )
 
     def parse_lti_2_0_handler_suffix(self, suffix):
         """
@@ -173,7 +175,7 @@ class LTI20BlockMixin:
         else:
             return float(math.ceil((number * p) - 0.5)) / p
 
-    def _lti_2_0_result_get_handler(self, request, real_user):
+    def _lti_2_0_result_get_handler(self, _request, real_user):
         """
         Helper request handler for GET requests to LTI 2.0 result endpoint
 
@@ -199,7 +201,7 @@ class LTI20BlockMixin:
         base_json_obj['comment'] = self.score_comment
         return Response(json.dumps(base_json_obj).encode('utf-8'), content_type=LTI_2_0_JSON_CONTENT_TYPE)
 
-    def _lti_2_0_result_del_handler(self, request, real_user):
+    def _lti_2_0_result_del_handler(self, _request, real_user):
         """
         Helper request handler for DELETE requests to LTI 2.0 result endpoint
 
@@ -240,7 +242,7 @@ class LTI20BlockMixin:
             return Response(status=200)
 
         # Fall-through record the score and the comment in the block
-        self.set_user_module_score(real_user, score, self.max_score(), comment)
+        self.set_user_module_score(real_user, score, self.max_score(), comment=comment)
         return Response(status=200)
 
     def clear_user_module_score(self, user):
@@ -255,7 +257,7 @@ class LTI20BlockMixin:
         """
         self.set_user_module_score(user, None, None, score_deleted=True)
 
-    def set_user_module_score(self, user, score, max_score, comment="", score_deleted=False):
+    def set_user_module_score(self, user, score, max_score, *, comment="", score_deleted=False):
         """
         Sets the module user state, including grades and comments, and also scoring in db's courseware_studentmodule
 
