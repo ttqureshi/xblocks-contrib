@@ -69,6 +69,7 @@ from urllib import parse
 import nh3
 import oauthlib.oauth1
 from django.conf import settings
+from django.utils.translation import gettext_noop as _
 from lxml import etree
 from oauthlib.oauth1.rfc5849 import signature
 from opaque_keys.edx.keys import UsageKey
@@ -100,13 +101,6 @@ DOCS_ANCHOR_TAG_OPEN = (
     "href='https://edx.readthedocs.io/projects/edx-partner-course-staff/en/latest/exercises_tools/lti_component.html'>"
 )
 BREAK_TAG = '<br />'
-
-# Make '_' a no-op so we can scrape strings. Using lambda instead of
-#  `django.utils.translation.ugettext_noop` because Django cannot be imported in this file
-def noop(text):
-    return text
-
-_ = noop
 
 class LTIFields:
     """
@@ -533,7 +527,8 @@ class LTIBlock(
         frag = Fragment()
         frag.add_content(
             resource_loader.render_django_template(
-                "templates/lti.html", self.get_context()
+                "templates/lti.html", self.get_context(),
+                i18n_service=self.runtime.service(self, 'i18n')
             )
         )
 
