@@ -36,7 +36,8 @@ What is supported:
 1.) Display of simple LTI in iframe or a new window.
 2.) Multiple LTI components on a single page.
 3.) The use of multiple LTI providers per course.
-4.) Use of advanced LTI component that provides back a grade.
+4.) Use of advanced LTI component that provides back a grade.::
+
     A) LTI 1.1.1 XML endpoint
         a.) The LTI provider sends back a grade to a specified URL.
         b.) Currently only action "update" is supported. "Read", and "delete"
@@ -119,7 +120,7 @@ class LTIFields:
 
     Default non-empty URL for `launch_url` is needed due to oauthlib demand (URL scheme should be presented)::
 
-    https://github.com/idan/oauthlib/blob/master/oauthlib/oauth1/rfc5849/signature.py#L136
+        https://github.com/idan/oauthlib/blob/master/oauthlib/oauth1/rfc5849/signature.py#L136
     """
     display_name = String(
         display_name=_("Display Name"),
@@ -300,78 +301,78 @@ class LTIBlock(
     Except usual Xmodule structure it proceeds with OAuth signing.
     How it works::
 
-    1. Get credentials from course settings.
+        1. Get credentials from course settings.
 
-    2.  There is minimal set of parameters need to be signed (presented for Vitalsource)::
+        2.  There is minimal set of parameters need to be signed (presented for Vitalsource)::
 
-            user_id
-            oauth_callback
-            lis_outcome_service_url
-            lis_result_sourcedid
-            launch_presentation_return_url
-            lti_message_type
-            lti_version
-            roles
-            *+ all custom parameters*
+                user_id
+                oauth_callback
+                lis_outcome_service_url
+                lis_result_sourcedid
+                launch_presentation_return_url
+                lti_message_type
+                lti_version
+                roles
+                *+ all custom parameters*
 
-        These parameters should be encoded and signed by *OAuth1* together with
-        `launch_url` and *POST* request type.
+            These parameters should be encoded and signed by *OAuth1* together with
+            `launch_url` and *POST* request type.
 
-    3. Signing proceeds with client key/secret pair obtained from course settings.
-        That pair should be obtained from LTI provider and set into course settings by course author.
-        After that signature and other OAuth data are generated.
+        3. Signing proceeds with client key/secret pair obtained from course settings.
+            That pair should be obtained from LTI provider and set into course settings by course author.
+            After that signature and other OAuth data are generated.
 
-        OAuth data which is generated after signing is usual::
+            OAuth data which is generated after signing is usual::
 
-            oauth_callback
-            oauth_nonce
-            oauth_consumer_key
-            oauth_signature_method
-            oauth_timestamp
-            oauth_version
+                oauth_callback
+                oauth_nonce
+                oauth_consumer_key
+                oauth_signature_method
+                oauth_timestamp
+                oauth_version
 
 
-    4. All that data is passed to form and sent to LTI provider server by browser via
-        autosubmit via JavaScript.
+        4. All that data is passed to form and sent to LTI provider server by browser via
+            autosubmit via JavaScript.
 
-        Form example::
+            Form example::
 
-            <form
-                action="${launch_url}"
-                name="ltiLaunchForm-${element_id}"
-                class="ltiLaunchForm"
-                method="post"
-                target="ltiLaunchFrame-${element_id}"
-                encType="application/x-www-form-urlencoded"
-            >
-                <input name="launch_presentation_return_url" value="" />
-                <input name="lis_outcome_service_url" value="" />
-                <input name="lis_result_sourcedid" value="" />
-                <input name="lti_message_type" value="basic-lti-launch-request" />
-                <input name="lti_version" value="LTI-1p0" />
-                <input name="oauth_callback" value="about:blank" />
-                <input name="oauth_consumer_key" value="${oauth_consumer_key}" />
-                <input name="oauth_nonce" value="${oauth_nonce}" />
-                <input name="oauth_signature_method" value="HMAC-SHA1" />
-                <input name="oauth_timestamp" value="${oauth_timestamp}" />
-                <input name="oauth_version" value="1.0" />
-                <input name="user_id" value="${user_id}" />
-                <input name="role" value="student" />
-                <input name="oauth_signature" value="${oauth_signature}" />
+                <form
+                    action="${launch_url}"
+                    name="ltiLaunchForm-${element_id}"
+                    class="ltiLaunchForm"
+                    method="post"
+                    target="ltiLaunchFrame-${element_id}"
+                    encType="application/x-www-form-urlencoded"
+                >
+                    <input name="launch_presentation_return_url" value="" />
+                    <input name="lis_outcome_service_url" value="" />
+                    <input name="lis_result_sourcedid" value="" />
+                    <input name="lti_message_type" value="basic-lti-launch-request" />
+                    <input name="lti_version" value="LTI-1p0" />
+                    <input name="oauth_callback" value="about:blank" />
+                    <input name="oauth_consumer_key" value="${oauth_consumer_key}" />
+                    <input name="oauth_nonce" value="${oauth_nonce}" />
+                    <input name="oauth_signature_method" value="HMAC-SHA1" />
+                    <input name="oauth_timestamp" value="${oauth_timestamp}" />
+                    <input name="oauth_version" value="1.0" />
+                    <input name="user_id" value="${user_id}" />
+                    <input name="role" value="student" />
+                    <input name="oauth_signature" value="${oauth_signature}" />
 
-                <input name="custom_1" value="${custom_param_1_value}" />
-                <input name="custom_2" value="${custom_param_2_value}" />
-                <input name="custom_..." value="${custom_param_..._value}" />
+                    <input name="custom_1" value="${custom_param_1_value}" />
+                    <input name="custom_2" value="${custom_param_2_value}" />
+                    <input name="custom_..." value="${custom_param_..._value}" />
 
-                <input type="submit" value="Press to Launch" />
-            </form>
+                    <input type="submit" value="Press to Launch" />
+                </form>
 
-    5. LTI provider has same secret key and it signs data string via *OAuth1* and compares signatures.
+        5. LTI provider has same secret key and it signs data string via *OAuth1* and compares signatures.
 
-        If signatures are correct, LTI provider redirects iframe source to LTI tool web page,
-        and LTI tool is rendered to iframe inside course.
+            If signatures are correct, LTI provider redirects iframe source to LTI tool web page,
+            and LTI tool is rendered to iframe inside course.
 
-        Otherwise error message from LTI provider is generated.
+            Otherwise error message from LTI provider is generated.
     """
 
     # Indicates that this XBlock has been extracted from edx-platform.
@@ -554,32 +555,32 @@ class LTIBlock(
 
         Example of request body from LTI provider::
 
-        <?xml version = "1.0" encoding = "UTF-8"?>
-            <imsx_POXEnvelopeRequest xmlns = "some_link (may be not required)">
-                <imsx_POXHeader>
-                    <imsx_POXRequestHeaderInfo>
-                    <imsx_version>V1.0</imsx_version>
-                    <imsx_messageIdentifier>528243ba5241b</imsx_messageIdentifier>
-                    </imsx_POXRequestHeaderInfo>
-                </imsx_POXHeader>
-                <imsx_POXBody>
-                    <replaceResultRequest>
-                    <resultRecord>
-                        <sourcedGUID>
-                        <sourcedId>feb-123-456-2929::28883</sourcedId>
-                        </sourcedGUID>
-                        <result>
-                        <resultScore>
-                            <language>en-us</language>
-                            <textString>0.4</textString>
-                        </resultScore>
-                        </result>
-                    </resultRecord>
-                    </replaceResultRequest>
-                </imsx_POXBody>
-            </imsx_POXEnvelopeRequest>
+            <?xml version = "1.0" encoding = "UTF-8"?>
+                <imsx_POXEnvelopeRequest xmlns = "some_link (may be not required)">
+                    <imsx_POXHeader>
+                        <imsx_POXRequestHeaderInfo>
+                        <imsx_version>V1.0</imsx_version>
+                        <imsx_messageIdentifier>528243ba5241b</imsx_messageIdentifier>
+                        </imsx_POXRequestHeaderInfo>
+                    </imsx_POXHeader>
+                    <imsx_POXBody>
+                        <replaceResultRequest>
+                        <resultRecord>
+                            <sourcedGUID>
+                            <sourcedId>feb-123-456-2929::28883</sourcedId>
+                            </sourcedGUID>
+                            <result>
+                            <resultScore>
+                                <language>en-us</language>
+                                <textString>0.4</textString>
+                            </resultScore>
+                            </result>
+                        </resultRecord>
+                        </replaceResultRequest>
+                    </imsx_POXBody>
+                </imsx_POXEnvelopeRequest>
 
-        Example of correct/incorrect answer XML body:: see response_xml_template.
+            Example of correct/incorrect answer XML body:: see response_xml_template.
         """
         response_xml_template = textwrap.dedent("""\
             <?xml version="1.0" encoding="UTF-8"?>

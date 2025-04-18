@@ -42,11 +42,13 @@ class LTI20BlockMixin:
 
         See http://www.imsglobal.org/lti/ltiv2p0/uml/purl.imsglobal.org/vocab/lis/v2/outcomes/Result/service.html
         An example JSON object:
+
         {
             "@context" : "http://purl.imsglobal.org/ctx/lis/v2/Result",
             "@type" : "Result",
             "resultScore" : 0.83,
             "comment" : "This is exceptional work."
+
         }
         For PUTs, the content type must be "application/vnd.ims.lis.v2.result+json".
         We use the "suffix" parameter to parse out the user from the end of the URL.  An example endpoint url is
