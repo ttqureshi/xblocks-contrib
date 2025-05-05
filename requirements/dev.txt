@@ -29,12 +29,12 @@ binaryornot==0.4.4
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.38.3
+boto3==1.38.8
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.38.3
+botocore==1.38.8
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -61,7 +61,7 @@ chardet==5.2.0
     #   binaryornot
     #   diff-cover
     #   tox
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -130,7 +130,7 @@ django-statici18n==2.6.0
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
-edx-i18n-tools==1.8.0
+edx-i18n-tools==1.9.0
     # via
     #   -r requirements/dev.in
     #   -r requirements/quality.txt
@@ -276,7 +276,7 @@ pygments==2.19.1
     #   -r requirements/test.txt
     #   diff-cover
     #   rich
-pylint==3.3.6
+pylint==3.3.7
     # via
     #   -r requirements/quality.txt
     #   edx-lint
