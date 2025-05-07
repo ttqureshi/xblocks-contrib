@@ -18,9 +18,9 @@ XBlocks Being Moved Here
 These are the XBlocks being moved here, and each of their statuses:
 
 * ``poll_question`` -- Placeholder
-* ``word_cloud`` -- Placeholder
-* ``annotatable`` -- Placeholder
-* ``lti`` -- Placeholder
+* ``word_cloud`` -- In Development
+* ``annotatable`` -- In Development
+* ``lti`` -- In Development
 * ``html`` -- Placeholder
 * ``discussion`` -- Placeholder
 * ``problem`` -- Placeholder
