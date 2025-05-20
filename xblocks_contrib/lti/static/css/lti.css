@@ -1,9 +1,57 @@
 /* CSS for LTIBlock */
 
-.lti .count {
-    font-weight: bold;
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700");
+
+h2.problem-header {
+    display: inline-block;
 }
 
-.lti p {
-    cursor: pointer;
+div.problem-progress {
+    display: inline-block;
+    padding-left: 5px;
+    color: #666;
+    font-weight: 100;
+    font-size: 1em;
+}
+
+div.lti {
+    margin: 0 auto;
+}
+
+div.lti .wrapper-lti-link {
+    font-size: 14px;
+    background-color: #f6f6f6;
+    padding: 20px;
+}
+
+div.lti .wrapper-lti-link .lti-link {
+    margin-bottom: 0;
+    text-align: right;
+}
+
+div.lti .wrapper-lti-link .lti-link .link_lti_new_window {
+    font-size: 13px;
+    line-height: 20.72px;
+}
+
+div.lti form.ltiLaunchForm {
+    display: none;
+}
+
+div.lti iframe.ltiLaunchFrame {
+    width: 100%;
+    height: 800px;
+    display: block;
+    border: 0px;
+}
+
+div.lti h4.problem-feedback-label {
+    font-weight: 100;
+    font-size: 1em;
+    font-family: "Source Sans", "Open Sans", Verdana, Geneva, sans-serif, sans-serif;
+}
+
+div.lti div.problem-feedback {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
