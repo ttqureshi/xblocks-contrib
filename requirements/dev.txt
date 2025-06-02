@@ -29,12 +29,12 @@ binaryornot==0.4.4
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.38.23
+boto3==1.38.27
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.38.23
+botocore==1.38.27
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -100,7 +100,7 @@ coverage[toml]==7.8.2
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   pytest-cov
-diff-cover==9.3.1
+diff-cover==9.3.2
     # via -r requirements/dev.in
 dill==0.4.0
     # via
