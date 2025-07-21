@@ -29,12 +29,12 @@ binaryornot==0.4.4
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   cookiecutter
-boto3==1.39.4
+boto3==1.39.9
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   fs-s3fs
-botocore==1.39.4
+botocore==1.39.9
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -49,7 +49,7 @@ cachetools==6.1.0
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   tox
-certifi==2025.7.9
+certifi==2025.7.14
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -100,13 +100,13 @@ coverage[toml]==7.9.2
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   pytest-cov
-diff-cover==9.5.0
+diff-cover==9.6.0
     # via -r requirements/dev.in
 dill==0.4.0
     # via
     #   -r requirements/quality.txt
     #   pylint
-distlib==0.3.9
+distlib==0.4.0
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -231,7 +231,7 @@ mdurl==0.1.2
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   markdown-it-py
-nh3==0.2.21
+nh3==0.3.0
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -386,7 +386,7 @@ rich==14.0.0
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
     #   cookiecutter
-s3transfer==0.13.0
+s3transfer==0.13.1
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
@@ -429,7 +429,7 @@ tomlkit==0.13.3
     # via
     #   -r requirements/quality.txt
     #   pylint
-tox==4.27.0
+tox==4.28.0
     # via
     #   -r requirements/quality.txt
     #   -r requirements/test.txt
