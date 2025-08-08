@@ -3,8 +3,10 @@
 
 -r base.txt               # Core dependencies for this package
 
+code-annotations          # provides commands used by the pii_check make target.
+ddt                       # Run a test case multiple times with different input; used in many, many of our tests
+edx-opaque-keys
 pytest-cov                # pytest extension for code coverage statistics
 pytest-django             # pytest extension for better Django support
-code-annotations          # provides commands used by the pii_check make target.
-xblock-sdk                # provides workbench settings for testing
 tox                       # Virtualenv management for tests
+xblock-sdk                # provides workbench settings for testing
