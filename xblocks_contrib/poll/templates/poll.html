@@ -1,7 +1,7 @@
-{% load i18n %}
-
-<div class="poll">
-<p>
-    PollBlock: {% trans "count is now" %} <span class='count'>{{ count }}</span> {% trans "click me to increment." %}
-</p>
+<div
+    id="{{ element_id }}"
+    class="{{ element_class }}"
+>
+    <!-- Hidden field to read configuration JSON from. -->
+    <div class="{{ element_class }}_div" id="{{ element_id }}_json" style="display: none;">{{ configuration_json|safe}}</div>
 </div>
