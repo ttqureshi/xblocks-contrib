@@ -13,6 +13,13 @@ Change Log
 
 Unreleased
 **********
+0.6.0 – 2025-08-13
+**********************************************
+
+Added
+=====
+
+* Restore get_html in the extracted Annotatable XBlock to match existing edx-platform
 
 0.5.0 – 2025-08-8
 **********************************************

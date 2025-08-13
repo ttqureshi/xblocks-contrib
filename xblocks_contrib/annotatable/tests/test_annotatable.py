@@ -120,6 +120,11 @@ class AnnotatableBlockTestCase(unittest.TestCase):
         actual_num_annotations = el.xpath('count(//span[contains(@class,"annotatable-span")])')
         assert expected_num_annotations == actual_num_annotations, "check number of annotations"
 
+    def test_get_html(self):
+        context = self.annotatable.get_html()
+        for key in ["display_name", "element_id", "content_html", "instructions_html"]:
+            assert key in context
+
     def test_extract_instructions(self):
         xmltree = etree.fromstring(self.sample_xml)
 

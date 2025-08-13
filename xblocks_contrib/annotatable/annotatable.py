@@ -163,18 +163,22 @@ class AnnotatableBlock(XBlock):
             return etree.tostring(instructions, encoding="unicode")
         return None
 
+    def get_html(self):
+        """Returns the HTML representation of the XBlock for student view."""
+        return {
+            "element_id": uuid.uuid1(0),
+            "display_name": self.display_name,
+            "instructions_html": self._extract_instructions(etree.fromstring(self.data)),
+            "content_html": self._render_content(),
+        }
+
     def student_view(self, context=None):  # pylint: disable=unused-argument
         """Renders the output that a student will see."""
         frag = Fragment()
         frag.add_content(
             resource_loader.render_django_template(
                 "templates/annotatable.html",
-                {
-                    "element_id": uuid.uuid1(0),
-                    "display_name": self.display_name,
-                    "instructions_html": self._extract_instructions(etree.fromstring(self.data)),
-                    "content_html": self._render_content(),
-                },
+                self.get_html(),
                 i18n_service=self.runtime.service(self, "i18n"),
             )
         )
