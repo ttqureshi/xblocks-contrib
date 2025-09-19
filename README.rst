@@ -17,14 +17,14 @@ XBlocks Being Moved Here
 
 These are the XBlocks being moved here, and each of their statuses:
 
-* ``poll_question`` -- Placeholder
-* ``word_cloud`` -- In Development
-* ``annotatable`` -- In Development
+* ``poll_question`` -- Ready to Use
+* ``word_cloud`` -- Ready to Use
+* ``annotatable`` -- Ready to Use
 * ``lti`` -- In Development
-* ``html`` -- Placeholder
+* ``html`` -- Ready to Use
 * ``discussion`` -- Placeholder
-* ``problem`` -- Placeholder
-* ``video`` -- Placeholder
+* ``problem`` -- In Development
+* ``video`` -- In Development
 
 The possible XBlock statuses are:
 
