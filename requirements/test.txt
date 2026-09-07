@@ -10,28 +10,28 @@ appdirs==1.4.4
     #   fs
 arrow==1.4.0
     # via cookiecutter
-asgiref==3.11.1
+asgiref==3.12.1
     # via
     #   -r requirements/base.txt
     #   django
 binaryornot==0.6.0
     # via cookiecutter
-boto3==1.43.2
+boto3==1.43.89
     # via
     #   -r requirements/base.txt
     #   fs-s3fs
-botocore==1.43.2
+botocore==1.43.89
     # via
     #   -r requirements/base.txt
     #   boto3
     #   s3transfer
-cachetools==7.1.1
+cachetools==7.1.8
     # via tox
-certifi==2026.4.22
+certifi==2026.7.22
     # via requests
-charset-normalizer==3.4.7
+charset-normalizer==3.5.1
     # via requests
-click==8.3.3
+click==8.5.0
     # via
     #   code-annotations
     #   cookiecutter
@@ -41,11 +41,11 @@ colorama==0.4.6
     # via tox
 cookiecutter==2.7.1
     # via xblock-sdk
-coverage[toml]==7.13.5
+coverage[toml]==7.16.0
     # via pytest-cov
 ddt==1.7.2
     # via -r requirements/test.in
-distlib==0.4.0
+distlib==0.4.3
     # via virtualenv
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
@@ -59,7 +59,7 @@ django-appconf==1.2.0
     # via
     #   -r requirements/base.txt
     #   django-statici18n
-django-statici18n==2.7.1
+django-statici18n==2.8.0
     # via -r requirements/base.txt
 dnspython==2.8.0
     # via
@@ -71,7 +71,8 @@ edx-opaque-keys==4.0.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.in
-filelock==3.29.0
+    #   xblock
+filelock==3.32.5
     # via
     #   python-discovery
     #   tox
@@ -87,7 +88,7 @@ fs-s3fs==1.1.1
     #   -r requirements/base.txt
     #   openedx-django-pyfs
     #   xblock-sdk
-idna==3.13
+idna==3.19
     # via requests
 iniconfig==2.3.0
     # via pytest
@@ -100,22 +101,24 @@ jmespath==1.1.0
     #   -r requirements/base.txt
     #   boto3
     #   botocore
-lxml[html-clean]==6.1.0
+lazy==2.0
+    # via xblock
+lxml[html-clean]==6.1.3
     # via
     #   -r requirements/base.txt
     #   edx-i18n-tools
     #   lxml-html-clean
     #   xblock
     #   xblock-sdk
-lxml-html-clean==0.4.4
+lxml-html-clean==0.4.5
     # via
     #   -r requirements/base.txt
     #   lxml
-mako==1.3.12
+mako==1.4.1
     # via
     #   -r requirements/base.txt
     #   xblock
-markdown-it-py==4.0.0
+markdown-it-py==4.2.0
     # via rich
 markupsafe==3.0.3
     # via
@@ -125,13 +128,15 @@ markupsafe==3.0.3
     #   xblock
 mdurl==0.1.2
     # via markdown-it-py
-nh3==0.3.5
+nh3==0.3.7
     # via -r requirements/base.txt
 oauthlib==3.3.1
     # via -r requirements/base.txt
 openedx-django-pyfs==4.0.0
-    # via -r requirements/base.txt
-packaging==26.2
+    # via
+    #   -r requirements/base.txt
+    #   xblock
+packaging==26.3
     # via
     #   pyproject-api
     #   pytest
@@ -140,9 +145,8 @@ path==16.16.0
     # via
     #   -r requirements/base.txt
     #   edx-i18n-tools
-platformdirs==4.9.6
+platformdirs==4.11.7
     # via
-    #   python-discovery
     #   tox
     #   virtualenv
 pluggy==1.6.0
@@ -154,25 +158,25 @@ polib==1.2.0
     # via
     #   -r requirements/base.txt
     #   edx-i18n-tools
-pygments==2.20.0
+pygments==2.21.0
     # via
     #   pytest
     #   rich
-pymongo==4.17.0
+pymongo==4.18.0
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
 pypng==0.20220715.0
     # via xblock-sdk
-pyproject-api==1.10.0
+pyproject-api==1.11.0
     # via tox
-pytest==9.0.3
+pytest==9.1.1
     # via
     #   pytest-cov
     #   pytest-django
 pytest-cov==7.1.0
     # via -r requirements/test.in
-pytest-django==4.12.0
+pytest-django==4.14.0
     # via -r requirements/test.in
 python-dateutil==2.9.0.post0
     # via
@@ -180,7 +184,7 @@ python-dateutil==2.9.0.post0
     #   arrow
     #   botocore
     #   xblock
-python-discovery==1.2.2
+python-discovery==1.6.0
     # via
     #   tox
     #   virtualenv
@@ -188,7 +192,7 @@ python-slugify==8.0.4
     # via
     #   code-annotations
     #   cookiecutter
-pytz==2026.2
+pytz==2026.3.post1
     # via
     #   -r requirements/base.txt
     #   xblock
@@ -199,17 +203,17 @@ pyyaml==6.0.3
     #   cookiecutter
     #   edx-i18n-tools
     #   xblock
-requests==2.33.1
+requests==2.34.2
     # via
     #   cookiecutter
     #   xblock-sdk
 rich==15.0.0
     # via cookiecutter
-s3transfer==0.17.0
+s3transfer==0.19.2
     # via
     #   -r requirements/base.txt
     #   boto3
-simplejson==4.1.1
+simplejson==4.1.2
     # via
     #   -r requirements/base.txt
     #   xblock
@@ -220,11 +224,11 @@ six==1.17.0
     #   fs
     #   fs-s3fs
     #   python-dateutil
-sqlparse==0.5.5
+sqlparse==0.6.0
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==5.7.0
+stevedore==5.9.1
     # via
     #   -r requirements/base.txt
     #   code-annotations
@@ -233,36 +237,34 @@ text-unidecode==1.3
     # via python-slugify
 tomli-w==1.2.0
     # via tox
-tox==4.53.1
+tox==4.61.2
     # via -r requirements/test.in
-typing-extensions==4.15.0
+typing-extensions==4.16.0
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
-tzdata==2026.2
+    #   tox
+tzdata==2026.3
     # via arrow
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   -r requirements/base.txt
     #   botocore
     #   requests
-virtualenv==21.3.0
+virtualenv==21.7.8
     # via tox
 web-fragments==4.0.0
+    # via xblock-sdk
+webob==1.8.11
     # via
     #   -r requirements/base.txt
     #   xblock
     #   xblock-sdk
-webob==1.8.9
-    # via
-    #   -r requirements/base.txt
-    #   xblock
-    #   xblock-sdk
-xblock==6.1.0
+xblock[django]==6.3.3
     # via
     #   -r requirements/base.txt
     #   xblock-sdk
-xblock-sdk==0.14.0
+xblock-sdk==0.15.2
     # via -r requirements/test.in
 
 # The following packages are considered to be unsafe in a requirements file:
